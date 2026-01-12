@@ -1,3 +1,4 @@
+import HomePage from '@/pages/home'
 import AuthLayout from '@/layouts/auth'
 import DashboardLayout from '@/layouts/dashboard/index'
 import LoginPage from '@/pages/auth/login'
@@ -30,7 +31,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: '',
-        element: <div>home in router</div>,
+        element: <HomePage/>,
       },
       {
         path: 'transactions',

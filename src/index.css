@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@plugin "flowbite-react/plugin/tailwindcss";
+@source "../.flowbite-react/class-list.json";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --color-primary-50: #f3fdf4;
+    --color-primary-100: #dcfce7;
+    --color-primary-200: #bbf7d0;
+    --color-primary-300: #86efac;
+    --color-primary-400: #4ade80;
+    --color-primary-500: #22c55e;
+    --color-primary-600: #16a34a;
+    --color-primary-700: #3e8331;
+    --color-primary-800: #166534;
+    --color-primary-900: #14532d;
+}
+
+@layer base {
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+}
+
+@layer components {
+    .link {
+        @apply text-blue-500 hover:cursor-pointer hover:underline hover:text-blue-600 dark:hover:text-blue-400 duration-300
+    }
+}

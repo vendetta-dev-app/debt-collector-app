@@ -1,0 +1,520 @@
+"""Exposes a URL that specifies the behavior of this scalar."""
+directive @specifiedBy(
+  """The URL that specifies the behavior of this scalar."""
+  url: String!
+) on SCALAR
+
+"""An enumeration."""
+enum AccountsUserRoleChoices {
+  """Administrator"""
+  ADMIN
+
+  """Collector"""
+  COLLECTOR
+
+  """Client"""
+  CLIENT
+}
+
+input AddAdminToRouteInput {
+  routeId: String!
+  adminEmail: String!
+  clientMutationId: String
+}
+
+type AddAdminToRoutePayload {
+  route: RouteNode
+  clientMutationId: String
+}
+
+type AdminNode implements Node {
+  """The ID of the object"""
+  id: ID!
+  user: UserNode!
+  collectors(offset: Int, before: String, after: String, first: Int, last: Int, isActive: Boolean, fullName: String): CollectorNodeConnection!
+  managers(offset: Int, before: String, after: String, first: Int, last: Int): ManagerNodeConnection!
+  routesAsAdmin(offset: Int, before: String, after: String, first: Int, last: Int): RouteNodeConnection!
+}
+
+type AdminNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [AdminNodeEdge]!
+}
+
+"""A Relay edge containing a `AdminNode` and its cursor."""
+type AdminNodeEdge {
+  """The item at the end of the edge"""
+  node: AdminNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""
+The `BigInt` scalar type represents non-fractional whole numeric values.
+`BigInt` is not constrained to 32-bit like the `Int` type and thus is a less
+compatible type.
+"""
+scalar BigInt
+
+type CityNode implements Node {
+  """The ID of the object"""
+  id: ID!
+  name: String!
+  nameAscii: String!
+  slug: String!
+  geonameId: Int
+  alternateNames: String
+  displayName: String!
+  searchNames: String!
+  latitude: Decimal
+  longitude: Decimal
+  region: RegionNode
+  population: BigInt
+  featureCode: String
+  timezone: String
+  routes(offset: Int, before: String, after: String, first: Int, last: Int): RouteNodeConnection!
+}
+
+type CityNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [CityNodeEdge]!
+}
+
+"""A Relay edge containing a `CityNode` and its cursor."""
+type CityNodeEdge {
+  """The item at the end of the edge"""
+  node: CityNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type ClientNode implements Node {
+  """The ID of the object"""
+  id: ID!
+  user: UserNode!
+  alias: String
+  identityDocument: String!
+  addressLine1: String!
+  addressLine2: String
+  neighborhood: String!
+  collector: CollectorNode!
+  isActive: Boolean!
+}
+
+type ClientNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [ClientNodeEdge]!
+}
+
+"""A Relay edge containing a `ClientNode` and its cursor."""
+type ClientNodeEdge {
+  """The item at the end of the edge"""
+  node: ClientNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type CollectorNode implements Node {
+  """The ID of the object"""
+  id: ID!
+  user: UserNode!
+  admin: AdminNode!
+  isActive: Boolean!
+  clients(offset: Int, before: String, after: String, first: Int, last: Int): ClientNodeConnection!
+  routesAsCollector(offset: Int, before: String, after: String, first: Int, last: Int): RouteNodeConnection!
+}
+
+type CollectorNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [CollectorNodeEdge]!
+  totalCount: Int
+}
+
+"""A Relay edge containing a `CollectorNode` and its cursor."""
+type CollectorNodeEdge {
+  """The item at the end of the edge"""
+  node: CollectorNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+input CreateAdminInput {
+  email: String!
+  fullName: String!
+  phoneNumber1: String!
+  phoneNumber2: String
+  invitationCode: String!
+  password: String!
+  clientMutationId: String
+}
+
+type CreateAdminPayload {
+  user: UserNode
+  clientMutationId: String
+}
+
+input CreateClientInput {
+  email: String!
+  fullName: String!
+  phoneNumber1: String!
+  phoneNumber2: String
+  password: String!
+  alias: String
+  identityDocument: String!
+  addressLine1: String!
+  addressLine2: String
+  neighborhood: String!
+  clientMutationId: String
+}
+
+type CreateClientPayload {
+  user: UserNode
+  clientMutationId: String
+}
+
+input CreateCollectorInput {
+  email: String!
+  fullName: String!
+  phoneNumber1: String!
+  phoneNumber2: String
+  password: String!
+  clientMutationId: String
+}
+
+type CreateCollectorPayload {
+  collector: CollectorNode
+  clientMutationId: String
+}
+
+input CreateManagerInput {
+  email: String!
+  fullName: String!
+  phoneNumber1: String!
+  phoneNumber2: String
+  password: String!
+  clientMutationId: String
+}
+
+type CreateManagerPayload {
+  manager: ManagerNode
+  clientMutationId: String
+}
+
+input CreateRouteInput {
+  name: String!
+  cityId: String!
+  collectorId: String!
+  managerId: String!
+  initialValue: Decimal!
+  clientMutationId: String
+}
+
+type CreateRoutePayload {
+  route: RouteNode
+  clientMutationId: String
+}
+
+"""
+The `DateTime` scalar type represents a DateTime
+value as specified by
+[iso8601](https://en.wikipedia.org/wiki/ISO_8601).
+"""
+scalar DateTime
+
+"""The `Decimal` scalar type represents a python Decimal."""
+scalar Decimal
+
+input EditCollectorInput {
+  email: String!
+  fullName: String!
+  phoneNumber1: String!
+  phoneNumber2: String
+  userId: String!
+  isActive: Boolean!
+  clientMutationId: String
+}
+
+type EditCollectorPayload {
+  user: UserNode
+  clientMutationId: String
+}
+
+input EditRouteInput {
+  routeId: String!
+  collectorId: String!
+  managerId: String!
+  clientMutationId: String
+}
+
+type EditRoutePayload {
+  route: RouteNode
+  clientMutationId: String
+}
+
+"""
+The `GenericScalar` scalar type represents a generic
+GraphQL scalar value that could be:
+String, Boolean, Int, Float, List or Object.
+"""
+scalar GenericScalar
+
+type ManagerNode implements Node {
+  """The ID of the object"""
+  id: ID!
+  user: UserNode!
+  admin: AdminNode!
+  isActive: Boolean!
+  routesAsManager(offset: Int, before: String, after: String, first: Int, last: Int): RouteNodeConnection!
+}
+
+type ManagerNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [ManagerNodeEdge]!
+}
+
+"""A Relay edge containing a `ManagerNode` and its cursor."""
+type ManagerNodeEdge {
+  """The item at the end of the edge"""
+  node: ManagerNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type Mutation {
+  createRoute(input: CreateRouteInput!): CreateRoutePayload
+  editRoute(input: EditRouteInput!): EditRoutePayload
+  addAdminToRoute(input: AddAdminToRouteInput!): AddAdminToRoutePayload
+
+  """Obtain JSON Web Token mutation"""
+  tokenAuth(email: String!, password: String!): ObtainJSONWebToken
+  verifyToken(token: String): Verify
+  refreshToken(token: String): Refresh
+  createAdmin(input: CreateAdminInput!): CreateAdminPayload
+  createManager(input: CreateManagerInput!): CreateManagerPayload
+  createCollector(input: CreateCollectorInput!): CreateCollectorPayload
+  editCollector(input: EditCollectorInput!): EditCollectorPayload
+  createClient(input: CreateClientInput!): CreateClientPayload
+}
+
+"""An object with an ID"""
+interface Node {
+  """The ID of the object"""
+  id: ID!
+}
+
+"""Obtain JSON Web Token mutation"""
+type ObtainJSONWebToken {
+  payload: GenericScalar!
+  refreshExpiresIn: Int!
+  token: String!
+}
+
+"""
+The Relay compliant `PageInfo` type, containing data necessary to paginate this connection.
+"""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+}
+
+type Query {
+  transactions(offset: Int, before: String, after: String, first: Int, last: Int, routeId: String): TransactionNodeConnection
+  routesByAdmin(offset: Int, before: String, after: String, first: Int, last: Int): RouteNodeConnection
+  routesByCollector(offset: Int, before: String, after: String, first: Int, last: Int): RouteNodeConnection
+  route(
+    """The ID of the object"""
+    id: ID!
+  ): RouteNode
+  city: CityNode
+  cities(offset: Int, before: String, after: String, first: Int, last: Int, searchNames: String, searchNames_Icontains: String): CityNodeConnection
+  region: RegionNode
+  regions(offset: Int, before: String, after: String, first: Int, last: Int): RegionNodeConnection
+  me: UserNode
+  collectorsByAdmin(offset: Int, before: String, after: String, first: Int, last: Int, isActive: Boolean, fullName: String): CollectorNodeConnection
+  managersByAdmin(offset: Int, before: String, after: String, first: Int, last: Int): ManagerNodeConnection
+  clientsByAdmin(offset: Int, before: String, after: String, first: Int, last: Int): ClientNodeConnection
+}
+
+type Refresh {
+  payload: GenericScalar!
+  refreshExpiresIn: Int!
+  token: String!
+}
+
+type RegionNode implements Node {
+  """The ID of the object"""
+  id: ID!
+  name: String!
+  nameAscii: String!
+  slug: String!
+  geonameId: Int
+  alternateNames: String
+  displayName: String!
+  geonameCode: String
+  citySet(offset: Int, before: String, after: String, first: Int, last: Int, searchNames: String, searchNames_Icontains: String): CityNodeConnection!
+}
+
+type RegionNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [RegionNodeEdge]!
+}
+
+"""A Relay edge containing a `RegionNode` and its cursor."""
+type RegionNodeEdge {
+  """The item at the end of the edge"""
+  node: RegionNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type RouteNode implements Node {
+  """The ID of the object"""
+  id: ID!
+  name: String!
+  city: CityNode!
+  collector: CollectorNode
+  administrators(offset: Int, before: String, after: String, first: Int, last: Int): AdminNodeConnection!
+  manager: ManagerNode
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  startingBalance: Decimal
+  currentBalance: Decimal
+  transactions: [TransactionNode]
+}
+
+type RouteNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [RouteNodeEdge]!
+}
+
+"""A Relay edge containing a `RouteNode` and its cursor."""
+type RouteNodeEdge {
+  """The item at the end of the edge"""
+  node: RouteNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type TransactionNode implements Node {
+  """The ID of the object"""
+  id: ID!
+  objectId: Int!
+  transactionType: TransactionsTransactionTransactionTypeChoices!
+  amount: Decimal!
+  description: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  voided: Boolean!
+  maker: UserNode
+  associatedProfile: UserNode
+}
+
+type TransactionNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [TransactionNodeEdge]!
+}
+
+"""A Relay edge containing a `TransactionNode` and its cursor."""
+type TransactionNodeEdge {
+  """The item at the end of the edge"""
+  node: TransactionNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""An enumeration."""
+enum TransactionsTransactionTransactionTypeChoices {
+  """Route initial"""
+  ROUTE_INITIAL
+
+  """Route refund"""
+  ROUTE_REFUND
+
+  """Loan disbursement"""
+  LOAN_DISBURSEMENT
+
+  """Loan payment"""
+  LOAN_PAYMENT
+
+  """Adjustment"""
+  ADJUSTMENT
+
+  """Expense"""
+  EXPENSE
+
+  """Cash out"""
+  CASH_OUT
+}
+
+type UserNode implements Node {
+  """The ID of the object"""
+  id: ID!
+  password: String!
+  lastLogin: DateTime
+
+  """
+  Designates that this user has all permissions without explicitly assigning them.
+  """
+  isSuperuser: Boolean!
+  email: String!
+  fullName: String!
+  phoneNumber1: String!
+  phoneNumber2: String
+  role: AccountsUserRoleChoices!
+  dateJoined: DateTime!
+  updatedAt: DateTime!
+  isStaff: Boolean!
+  isActive: Boolean!
+  clientProfile: ClientNode
+  collectorProfile: CollectorNode
+  managerProfile: ManagerNode
+  adminProfile: AdminNode
+  transactionsMade(offset: Int, before: String, after: String, first: Int, last: Int, routeId: String): TransactionNodeConnection!
+  transactionsAssociated(offset: Int, before: String, after: String, first: Int, last: Int, routeId: String): TransactionNodeConnection!
+}
+
+type Verify {
+  payload: GenericScalar!
+}
+

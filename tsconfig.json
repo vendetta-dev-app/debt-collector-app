@@ -1,0 +1,65 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      // Atoms
+      "@atoms": [
+        "src/atoms/index"
+      ],
+      // Constants
+      "@constants": [
+        "src/constants/index"
+      ],
+      // Components
+      "@components": [
+        "src/components/index"
+      ],
+      // Hooks
+      "@hooks": [
+        "src/hooks/index"
+      ],
+      // GraphQL
+      "@gql": [
+        "src/gql/index"
+      ],
+      "@types": [
+        "src/gql/graphql"
+      ],
+      // Modules
+      "@auth/*": [
+        "src/modules/auth/*"
+      ],
+      // Snippets
+      "@snippets/*": [
+        "src/snippets/index"
+      ]
+    },
+    "target": "ES2020",
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "allowImportingTsExtensions": false,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
+    "strict": true,
+    "useDefineForClassFields": true,
+    "noEmit": true
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

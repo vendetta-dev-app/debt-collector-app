@@ -5,6 +5,7 @@ import LoginPage from '@/pages/auth/login'
 import RoutesPage from '@/pages/routes'
 import RoutePage from '@/pages/routes/route'
 import TransactionsPage from '@/pages/transactions'
+import LoansPage from '@/pages/loans'
 import LoanDetailPage from '@/pages/loans/route'
 import ProtectedRoutes from '@/router/ProtectedRoutes'
 import AuthProvider from '@auth/contexts/AuthProvider'
@@ -50,8 +51,18 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: '/loans/:loanId',
-        element: <LoanDetailPage/>,
+        path: '/loans',
+        element: <Outlet/>,
+        children: [
+          {
+            path: '/loans',
+            element: <LoansPage/>,
+          },
+          {
+            path: '/loans/:loanId',
+            element: <LoanDetailPage/>,
+          },
+        ],
       },
     ],
   },

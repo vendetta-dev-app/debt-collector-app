@@ -1,7 +1,7 @@
 import { graphql } from '@gql'
 
 const RouteByIdQuery = graphql(`
-  query RouteById($id: ID!){
+  query RouteById($id: String!){
     route(id: $id){
       id
       name

@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/client'
 import { useParams } from 'react-router-dom'
 import RouteByIdQuery from '@/modules/routes/queries/RouteByIdQuery'
-import { Badge, Button, Spinner } from 'flowbite-react'
+import { Badge, Spinner } from 'flowbite-react'
 import {
   HiOutlineClock,
   HiOutlineCollection,
@@ -11,11 +11,9 @@ import {
   HiOutlineUserGroup,
 } from 'react-icons/hi'
 import { PiEmpty } from 'react-icons/pi'
-import NiceModal from '@ebay/nice-modal-react'
 import { Text } from '@components'
 import InfoCard from '@/components/cards/InfoCard'
 import CurrencyCell from '@/components/tables/CurrencyCell'
-import AddAdminToRouteModal from '@/modules/routes/components/AddAdminToRouteModal'
 import TransactionsByRouteSection from '@/modules/routes/components/TransactionsByRouteSection'
 
 const RoutePage = () => {
@@ -127,16 +125,6 @@ const RoutePage = () => {
                 No hay administradores registrados
               </Text>
           }
-          <Button
-            size='xs'
-            color="light"
-            className='mt-4'
-            onClick={() => NiceModal.show(AddAdminToRouteModal, {
-              routeId: route.id
-            })}
-          >
-            Agregar administrador
-          </Button>
         </InfoCard>
         <InfoCard title="Recolector" titleIcon={HiOutlineUserCircle}>
           {

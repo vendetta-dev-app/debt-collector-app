@@ -53,7 +53,7 @@ const HomePage = () => {
       <div className="p-4">
         <div className="p-4 bg-gradient-to-br from-orange-100 to-primary-100 rounded-md">
           <img src="/coin.svg" alt="" className="w-8 mb-4"/>
-          <Text color="primay" size="lg" weight="bold">
+          <Text color="primary" size="lg" weight="bold">
             Bienvenido, {me?.fullName}
           </Text>
           <Text color="gray" size="sm" weight="semibold">

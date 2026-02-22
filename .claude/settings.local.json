@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bun run @gql/gql.ts)",
+      "Bash(bun run codegen)",
+      "Bash(bun run build 2>&1 | head -50)",
+      "Bash(timeout 10 bun run dev 2>&1 || true)",
+      "Bash(bun run build 2>&1 | head -30)",
+      "Bash(bun run build 2>&1 | head -40)",
+      "Bash(bun run build 2>&1 | head -20)",
+      "Bash(bun run build 2>&1 | grep -E \"error|Error\" | head -20)",
+      "Bash(bun run build 2>&1 | tail -5)"
+    ]
+  }
+}

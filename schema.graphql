@@ -12,6 +12,9 @@ enum AccountsUserRoleChoices {
   """Collector"""
   COLLECTOR
 
+  """Manager"""
+  MANAGER
+
   """Client"""
   CLIENT
 }
@@ -51,6 +54,20 @@ type AdminNodeEdge {
 
   """A cursor for use in pagination"""
   cursor: String!
+}
+
+input ApproveLoanInput {
+  loanId: String!
+  clientMutationId: String
+}
+
+"""
+Approves a pending loan and creates disbursement transactions.
+Only admins can approve loans.
+"""
+type ApproveLoanPayload {
+  loan: LoanNode
+  clientMutationId: String
 }
 
 """
@@ -107,6 +124,7 @@ type ClientNode implements Node {
   neighborhood: String!
   collector: CollectorNode!
   isActive: Boolean!
+  loans(offset: Int, before: String, after: String, first: Int, last: Int): LoanNodeConnection!
 }
 
 type ClientNodeConnection {
@@ -134,6 +152,7 @@ type CollectorNode implements Node {
   isActive: Boolean!
   clients(offset: Int, before: String, after: String, first: Int, last: Int): ClientNodeConnection!
   routesAsCollector(offset: Int, before: String, after: String, first: Int, last: Int): RouteNodeConnection!
+  loans(offset: Int, before: String, after: String, first: Int, last: Int): LoanNodeConnection!
 }
 
 type CollectorNodeConnection {
@@ -174,6 +193,7 @@ input CreateClientInput {
   fullName: String!
   phoneNumber1: String!
   phoneNumber2: String
+  collectorId: String!
   password: String!
   alias: String
   identityDocument: String!
@@ -202,6 +222,26 @@ type CreateCollectorPayload {
   clientMutationId: String
 }
 
+input CreateLoanInput {
+  routeId: String!
+  clientId: String!
+  amount: Decimal!
+  interestRate: Decimal!
+
+  """Due date in YYYY-MM-DD format"""
+  dueDate: String
+  clientMutationId: String
+}
+
+"""
+Creates a new loan request in PENDING status.
+The loan must be approved by an admin before disbursement.
+"""
+type CreateLoanPayload {
+  loan: LoanNode
+  clientMutationId: String
+}
+
 input CreateManagerInput {
   email: String!
   fullName: String!
@@ -213,6 +253,21 @@ input CreateManagerInput {
 
 type CreateManagerPayload {
   manager: ManagerNode
+  clientMutationId: String
+}
+
+input CreatePaymentInput {
+  loanId: String!
+  amount: Decimal!
+  paymentDate: String!
+  paymentMethod: String!
+  notes: String
+  clientMutationId: String
+}
+
+type CreatePaymentPayload {
+  payment: PaymentNode
+  loan: LoanNode
   clientMutationId: String
 }
 
@@ -229,6 +284,13 @@ type CreateRoutePayload {
   route: RouteNode
   clientMutationId: String
 }
+
+"""
+The `Date` scalar type represents a Date
+value as specified by
+[iso8601](https://en.wikipedia.org/wiki/ISO_8601).
+"""
+scalar Date
 
 """
 The `DateTime` scalar type represents a DateTime
@@ -274,6 +336,97 @@ String, Boolean, Int, Float, List or Object.
 """
 scalar GenericScalar
 
+type LoanNode implements Node {
+  """The ID of the object"""
+  id: ID!
+  route: RouteNode!
+  client: ClientNode!
+  collector: CollectorNode!
+  amount: Decimal!
+
+  """Tasa de interés permitida: 0%, 10% o 20%"""
+  interestRate: LoansLoanInterestRateChoices!
+
+  """Cantidad de cuotas (mínimo 1, máximo 90)"""
+  installments: Int!
+
+  """Frecuencia de pagos: Diaria, Semanal o Mensual"""
+  paymentFrequency: LoansLoanPaymentFrequencyChoices!
+  isApproved: Boolean!
+  approvedAt: DateTime
+  approvedBy(
+    """The ID of the object"""
+    id: ID!
+  ): UserNode
+  rejectionReason: String!
+  isRejected: Boolean!
+  dueDate: Date
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  payments: [PaymentNode]
+  totalAmount: Decimal
+  totalPaid: Decimal
+  pendingBalance: Decimal
+  status: String
+  isFullyPaid: Boolean
+  isOverdue: Boolean
+  daysOverdue: Int
+  transactions: [TransactionNode]
+}
+
+type LoanNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [LoanNodeEdge]!
+}
+
+"""A Relay edge containing a `LoanNode` and its cursor."""
+type LoanNodeEdge {
+  """The item at the end of the edge"""
+  node: LoanNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+"""An enumeration."""
+enum LoansLoanInterestRateChoices {
+  """0%"""
+  A_0
+
+  """10%"""
+  A_10
+
+  """20%"""
+  A_20
+}
+
+"""An enumeration."""
+enum LoansLoanPaymentFrequencyChoices {
+  """Diaria"""
+  DAILY
+
+  """Semanal"""
+  WEEKLY
+
+  """Mensual"""
+  MONTHLY
+}
+
+"""An enumeration."""
+enum LoansPaymentPaymentMethodChoices {
+  """Efectivo"""
+  CASH
+
+  """Transferencia"""
+  TRANSFER
+
+  """Otro"""
+  OTHER
+}
+
 type ManagerNode implements Node {
   """The ID of the object"""
   id: ID!
@@ -301,12 +454,34 @@ type ManagerNodeEdge {
 }
 
 type Mutation {
+  """
+  Creates a new loan request in PENDING status.
+  The loan must be approved by an admin before disbursement.
+  """
+  createLoan(input: CreateLoanInput!): CreateLoanPayload
+
+  """
+  Approves a pending loan and creates disbursement transactions.
+  Only admins can approve loans.
+  """
+  approveLoan(input: ApproveLoanInput!): ApproveLoanPayload
+
+  """
+  Rejects a pending loan request.
+  Only admins can reject loans.
+  """
+  rejectLoan(input: RejectLoanInput!): RejectLoanPayload
+  createPayment(input: CreatePaymentInput!): CreatePaymentPayload
+
+  """
+  Voids a payment and creates reversal transaction on the route.
+  Only admins can void payments.
+  """
+  voidPayment(input: VoidPaymentInput!): VoidPaymentPayload
   createRoute(input: CreateRouteInput!): CreateRoutePayload
   editRoute(input: EditRouteInput!): EditRoutePayload
   addAdminToRoute(input: AddAdminToRouteInput!): AddAdminToRoutePayload
-
-  """Obtain JSON Web Token mutation"""
-  tokenAuth(email: String!, password: String!): ObtainJSONWebToken
+  tokenAuth(input: ObtainJSONWebTokenInput!): ObtainJSONWebTokenPayload
   verifyToken(token: String): Verify
   refreshToken(token: String): Refresh
   createAdmin(input: CreateAdminInput!): CreateAdminPayload
@@ -314,6 +489,7 @@ type Mutation {
   createCollector(input: CreateCollectorInput!): CreateCollectorPayload
   editCollector(input: EditCollectorInput!): EditCollectorPayload
   createClient(input: CreateClientInput!): CreateClientPayload
+  updateClient(input: UpdateClientInput!): UpdateClientPayload
 }
 
 """An object with an ID"""
@@ -322,10 +498,17 @@ interface Node {
   id: ID!
 }
 
-"""Obtain JSON Web Token mutation"""
-type ObtainJSONWebToken {
+input ObtainJSONWebTokenInput {
+  clientMutationId: String
+  email: String!
+  password: String!
+}
+
+type ObtainJSONWebTokenPayload {
   payload: GenericScalar!
   refreshExpiresIn: Int!
+  user: UserNode
+  clientMutationId: String
   token: String!
 }
 
@@ -346,14 +529,95 @@ type PageInfo {
   endCursor: String
 }
 
+type PaymentNode implements Node {
+  """The ID of the object"""
+  id: ID!
+  loan: LoanNode!
+  amount: Decimal!
+  paymentDate: Date!
+  paymentMethod: LoansPaymentPaymentMethodChoices!
+  notes: String!
+  voidedAt: DateTime
+  voidedBy: UserNode
+  voidReason: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  transactions: [TransactionNode]
+  isVoided: Boolean
+}
+
+type PaymentNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [PaymentNodeEdge]!
+}
+
+"""A Relay edge containing a `PaymentNode` and its cursor."""
+type PaymentNodeEdge {
+  """The item at the end of the edge"""
+  node: PaymentNode
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
 type Query {
+  loan(
+    """The ID of the object"""
+    id: ID!
+  ): LoanNode
+  payment(
+    """The ID of the object"""
+    id: ID!
+  ): PaymentNode
+  loansByCollector(
+    """Optional collector ID to filter by"""
+    collectorId: String
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+  ): LoanNodeConnection
+  loansByRoute(
+    """Route ID to filter by"""
+    routeId: String!
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+  ): LoanNodeConnection
+  loansByClient(
+    """Client ID to filter by"""
+    clientId: String!
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+  ): LoanNodeConnection
+
+  """Loans pending approval"""
+  pendingLoans(offset: Int, before: String, after: String, first: Int, last: Int): LoanNodeConnection
+
+  """Loans past their due date"""
+  overdueLoans(offset: Int, before: String, after: String, first: Int, last: Int): LoanNodeConnection
+  paymentsByLoan(
+    """Loan ID to filter by"""
+    loanId: String!
+    offset: Int
+    before: String
+    after: String
+    first: Int
+    last: Int
+  ): PaymentNodeConnection
   transactions(offset: Int, before: String, after: String, first: Int, last: Int, routeId: String): TransactionNodeConnection
   routesByAdmin(offset: Int, before: String, after: String, first: Int, last: Int): RouteNodeConnection
   routesByCollector(offset: Int, before: String, after: String, first: Int, last: Int): RouteNodeConnection
-  route(
-    """The ID of the object"""
-    id: ID!
-  ): RouteNode
+  route(id: String!): RouteNode
   city: CityNode
   cities(offset: Int, before: String, after: String, first: Int, last: Int, searchNames: String, searchNames_Icontains: String): CityNodeConnection
   region: RegionNode
@@ -400,6 +664,23 @@ type RegionNodeEdge {
   cursor: String!
 }
 
+input RejectLoanInput {
+  loanId: String!
+
+  """Reason for rejection"""
+  reason: String!
+  clientMutationId: String
+}
+
+"""
+Rejects a pending loan request.
+Only admins can reject loans.
+"""
+type RejectLoanPayload {
+  loan: LoanNode
+  clientMutationId: String
+}
+
 type RouteNode implements Node {
   """The ID of the object"""
   id: ID!
@@ -410,9 +691,12 @@ type RouteNode implements Node {
   manager: ManagerNode
   createdAt: DateTime!
   updatedAt: DateTime!
+  loans(offset: Int, before: String, after: String, first: Int, last: Int): LoanNodeConnection!
   startingBalance: Decimal
   currentBalance: Decimal
   transactions: [TransactionNode]
+  loansCount: Int
+  pendingLoansCount: Int
 }
 
 type RouteNodeConnection {
@@ -477,6 +761,9 @@ enum TransactionsTransactionTransactionTypeChoices {
   """Loan payment"""
   LOAN_PAYMENT
 
+  """Payment void"""
+  PAYMENT_VOID
+
   """Adjustment"""
   ADJUSTMENT
 
@@ -485,6 +772,24 @@ enum TransactionsTransactionTransactionTypeChoices {
 
   """Cash out"""
   CASH_OUT
+}
+
+input UpdateClientInput {
+  email: String!
+  fullName: String
+  phoneNumber1: String
+  phoneNumber2: String
+  id: String!
+  alias: String
+  addressLine1: String
+  addressLine2: String
+  neighborhood: String
+  clientMutationId: String
+}
+
+type UpdateClientPayload {
+  user: UserNode
+  clientMutationId: String
 }
 
 type UserNode implements Node {
@@ -512,9 +817,32 @@ type UserNode implements Node {
   adminProfile: AdminNode
   transactionsMade(offset: Int, before: String, after: String, first: Int, last: Int, routeId: String): TransactionNodeConnection!
   transactionsAssociated(offset: Int, before: String, after: String, first: Int, last: Int, routeId: String): TransactionNodeConnection!
+  approvedLoans(offset: Int, before: String, after: String, first: Int, last: Int): LoanNodeConnection!
+  voidedPayments(offset: Int, before: String, after: String, first: Int, last: Int): PaymentNodeConnection!
+  isCollector: Boolean
+  isAdmin: Boolean
+  isClient: Boolean
 }
 
 type Verify {
   payload: GenericScalar!
+}
+
+input VoidPaymentInput {
+  paymentId: String!
+
+  """Reason for voiding the payment"""
+  reason: String!
+  clientMutationId: String
+}
+
+"""
+Voids a payment and creates reversal transaction on the route.
+Only admins can void payments.
+"""
+type VoidPaymentPayload {
+  payment: PaymentNode
+  loan: LoanNode
+  clientMutationId: String
 }
 

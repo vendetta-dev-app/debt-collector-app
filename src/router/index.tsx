@@ -2,9 +2,6 @@ import HomePage from '@/pages/home'
 import AuthLayout from '@/layouts/auth'
 import DashboardLayout from '@/layouts/dashboard/index'
 import LoginPage from '@/pages/auth/login'
-import ClientsPage from '@/pages/clients'
-import CollectorsPage from '@/pages/collectors'
-import ResponsiblePage from '@/pages/responsible'
 import RoutesPage from '@/pages/routes'
 import RoutePage from '@/pages/routes/route'
 import TransactionsPage from '@/pages/transactions'
@@ -50,18 +47,6 @@ const router = createBrowserRouter([
             element: <RoutePage/>,
           },
         ],
-      },
-      {
-        path: 'collectors',
-        element: <CollectorsPage/>,
-      },
-      {
-        path: 'clients',
-        element: <ClientsPage/>,
-      },
-      {
-        path: 'responsible',
-        element: <ResponsiblePage/>,
       },
     ],
   },

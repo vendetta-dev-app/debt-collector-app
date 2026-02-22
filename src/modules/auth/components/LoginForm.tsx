@@ -6,7 +6,7 @@ import TokenAuthMutation from '@auth/mutations/tokenAuthMutation'
 import { formErrors } from '@constants'
 import { Alert, Button } from 'flowbite-react'
 import { Form, Formik } from 'formik'
-import { FC, PropsWithChildren } from 'react'
+import { FC, PropsWithChildren, useState } from 'react'
 import { HiInformationCircle } from 'react-icons/hi'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import * as Yup from 'yup'
@@ -20,11 +20,19 @@ const LoginForm: FC<PropsWithChildren> = () => {
   const { login } = useAuth()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const [roleError, setRoleError] = useState<string | null>(null)
 
   const [tokenAuth, { error }] = useMutation(TokenAuthMutation, {
     onCompleted: (data) => {
       const from = searchParams.get('from')
+      setRoleError(null)
       if (data.tokenAuth?.token) {
+        // Verificar que el usuario sea cobrador
+        if (!data.tokenAuth.user?.isCollector) {
+          // Mostrar error si no es cobrador
+          setRoleError('Acceso exclusivo para cobradores')
+          return
+        }
         login(data.tokenAuth)
         navigate(from ? from : '/')
       }
@@ -44,8 +52,10 @@ const LoginForm: FC<PropsWithChildren> = () => {
   const onSubmit = async (values: Values) => {
     await tokenAuth({
       variables: {
-        email: values.email,
-        password: values.password,
+        input: {
+          email: values.email,
+          password: values.password,
+        },
       },
     })
   }
@@ -62,9 +72,9 @@ const LoginForm: FC<PropsWithChildren> = () => {
               Inicia sesión con tu cuenta de cobrador
             </Text>
             {
-              error &&
-              <Alert color="warning" icon={HiInformationCircle} className="mb-8">
-                {error?.message}
+              (error || roleError) &&
+              <Alert color={roleError ? "warning" : "failure"} icon={HiInformationCircle} className="mb-8">
+                {roleError || error?.message}
               </Alert>
             }
             <FormGrid>

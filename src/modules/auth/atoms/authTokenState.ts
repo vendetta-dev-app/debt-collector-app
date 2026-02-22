@@ -7,6 +7,7 @@ export const defaultValue: AuthTokenState = {
   payload: undefined,
   refreshToken: undefined,
   refreshExpiresIn: undefined,
+  user: null,
 }
 
 const authTokenState = atomWithStorage<AuthTokenState>(AUTH_TOKEN_KEY, defaultValue)

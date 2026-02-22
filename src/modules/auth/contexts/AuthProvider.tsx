@@ -11,7 +11,7 @@ interface Props {
 
 const AuthProvider = ({ children }: Props) => {
   const [authToken, setAuthToken] = useAtom(authTokenState)
-  const isAuthenticated = authToken.token !== undefined
+  const isAuthenticated = authToken !== undefined
 
   const login = async (tokenAuth: AuthTokenState) => {
     authTokenReactiveVar(JSON.stringify(tokenAuth))

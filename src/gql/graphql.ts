@@ -1267,6 +1267,55 @@ export type CreatePaymentMutation = {
   } | null;
 };
 
+export type LoanDetailQueryVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
+
+export type LoanDetailQuery = {
+  __typename?: "Query";
+  loan?: {
+    __typename?: "LoanNode";
+    id: string;
+    amount: any;
+    interestRate: LoansLoanInterestRateChoices;
+    installments: number;
+    paymentFrequency: LoansLoanPaymentFrequencyChoices;
+    isApproved: boolean;
+    isRejected: boolean;
+    isFullyPaid?: boolean | null;
+    isOverdue?: boolean | null;
+    daysOverdue?: number | null;
+    dueDate?: any | null;
+    createdAt: any;
+    updatedAt: any;
+    totalAmount?: any | null;
+    totalPaid?: any | null;
+    pendingBalance?: any | null;
+    status?: string | null;
+    client: {
+      __typename?: "ClientNode";
+      id: string;
+      alias?: string | null;
+      addressLine1: string;
+      addressLine2?: string | null;
+      neighborhood: string;
+      user: {
+        __typename?: "UserNode";
+        id: string;
+        fullName: string;
+        phoneNumber1: string;
+        phoneNumber2?: string | null;
+      };
+    };
+    route: {
+      __typename?: "RouteNode";
+      id: string;
+      name: string;
+      city: { __typename?: "CityNode"; id: string; name: string };
+    };
+  } | null;
+};
+
 export type LoansByClientQueryVariables = Exact<{
   clientId: Scalars["String"]["input"];
   first?: InputMaybe<Scalars["Int"]["input"]>;
@@ -2149,6 +2198,155 @@ export const CreatePaymentDocument = {
   CreatePaymentMutation,
   CreatePaymentMutationVariables
 >;
+export const LoanDetailDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "LoanDetail" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "ID" } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "loan" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "amount" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "interestRate" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "installments" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "paymentFrequency" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "isApproved" } },
+                { kind: "Field", name: { kind: "Name", value: "isRejected" } },
+                { kind: "Field", name: { kind: "Name", value: "isFullyPaid" } },
+                { kind: "Field", name: { kind: "Name", value: "isOverdue" } },
+                { kind: "Field", name: { kind: "Name", value: "daysOverdue" } },
+                { kind: "Field", name: { kind: "Name", value: "dueDate" } },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+                { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+                { kind: "Field", name: { kind: "Name", value: "totalAmount" } },
+                { kind: "Field", name: { kind: "Name", value: "totalPaid" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "pendingBalance" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "status" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "client" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "user" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "fullName" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "phoneNumber1" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "phoneNumber2" },
+                            },
+                          ],
+                        },
+                      },
+                      { kind: "Field", name: { kind: "Name", value: "alias" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "addressLine1" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "addressLine2" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "neighborhood" },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "route" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "city" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "name" },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<LoanDetailQuery, LoanDetailQueryVariables>;
 export const LoansByClientDocument = {
   kind: "Document",
   definitions: [

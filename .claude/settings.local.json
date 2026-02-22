@@ -10,7 +10,8 @@
       "Bash(bun run build 2>&1 | head -20)",
       "Bash(bun run build 2>&1 | grep -E \"error|Error\" | head -20)",
       "Bash(bun run build 2>&1 | tail -5)",
-      "Bash(bun run build 2>&1 | tail -10)"
+      "Bash(bun run build 2>&1 | tail -10)",
+      "Bash(bun run codegen && bun run build 2>&1 | tail -5)"
     ]
   }
 }

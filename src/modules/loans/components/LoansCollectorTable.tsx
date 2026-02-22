@@ -104,7 +104,7 @@ const LoansCollectorTable = () => {
   return (
     <div className="space-y-6">
       {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <button
           onClick={() => setFilter('all')}
           className={`bg-white dark:bg-gray-800 rounded-lg shadow p-4 transition-all ${
@@ -268,7 +268,7 @@ const LoansCollectorTable = () => {
             <Link
               key={loan?.id}
               to={`/loans/${loan?.id}`}
-              className={`block bg-white dark:bg-gray-800 rounded-lg shadow p-4 hover:shadow-md transition-all border-l-4 ${
+              className={`block bg-white dark:bg-gray-800 rounded-lg shadow p-3 sm:p-4 hover:shadow-md transition-all border-l-4 ${
                 loan?.isOverdue && !loan?.isFullyPaid
                   ? 'border-red-500'
                   : loan?.isFullyPaid
@@ -276,74 +276,75 @@ const LoansCollectorTable = () => {
                   : 'border-green-500'
               }`}
             >
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
+              <div className="flex justify-between items-start gap-2">
+                <div className="flex-1 min-w-0">
                   {/* Client Info */}
-                  <div className="flex items-center gap-2 mb-2">
-                    <Text size="base" weight="semibold">
+                  <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-2">
+                    <p className="text-sm sm:text-base font-semibold truncate">
                       {loan?.client?.user?.fullName}
-                    </Text>
+                    </p>
                     {loan?.client?.alias && (
-                      <Badge color="gray" size="xs">{loan?.client?.alias}</Badge>
+                      <Badge color="gray" size="xs" className="hidden sm:inline-block">{loan?.client?.alias}</Badge>
                     )}
                     {loan?.isOverdue && !loan?.isFullyPaid && (
-                      <Badge color="red" size="sm">Vencido {loan?.daysOverdue} días</Badge>
+                      <Badge color="red" size="xs">Vencido {loan?.daysOverdue}d</Badge>
                     )}
                     {loan?.isFullyPaid && (
-                      <Badge color="success" size="sm">Pagado</Badge>
+                      <Badge color="success" size="xs">Pagado</Badge>
                     )}
                     {!loan?.isFullyPaid && !loan?.isOverdue && (
-                      <Badge color="green" size="sm">Activo</Badge>
+                      <Badge color="green" size="xs">Activo</Badge>
                     )}
                   </div>
 
                   {/* Address */}
-                  <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 mb-2">
+                  <div className="hidden sm:flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 mb-2">
                     <HiOutlineLocationMarker className="text-sm" />
                     {loan?.client?.addressLine1}, {loan?.client?.neighborhood}
                   </div>
 
                   {/* Route Info */}
-                  <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-3">
+                  <div className="flex items-center gap-1 sm:gap-2 text-xs text-gray-500 dark:text-gray-400 mb-3">
                     <HiOutlineCollection className="text-sm" />
-                    Ruta: {loan?.route?.name} · {loan?.route?.city?.name}
+                    <span className="truncate">{loan?.route?.name}</span>
+                    <span className="hidden sm:inline">· {loan?.route?.city?.name}</span>
                   </div>
 
                   {/* Amounts */}
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-4">
                     <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Monto</p>
-                      <Text size="sm" weight="medium">
+                      <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Monto</p>
+                      <p className="text-xs sm:text-sm font-medium">
                         <CurrencyCell value={loan?.amount || 0} />
-                      </Text>
+                      </p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Pagado</p>
-                      <Text size="sm" weight="medium" color="success">
+                      <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Pagado</p>
+                      <p className="text-xs sm:text-sm font-medium text-green-600 dark:text-green-400">
                         <CurrencyCell value={loan?.totalPaid || 0} />
-                      </Text>
+                      </p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Pendiente</p>
-                      <Text size="sm" weight="semibold" color={loan?.pendingBalance > 0 ? "red" : "success"}>
+                      <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Pendiente</p>
+                      <p className={`text-xs sm:text-sm font-semibold ${loan?.pendingBalance > 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
                         <CurrencyCell value={loan?.pendingBalance || 0} />
-                      </Text>
+                      </p>
                     </div>
                   </div>
 
                   {/* Due Date */}
                   {!loan?.isFullyPaid && loan?.dueDate && (
-                    <div className="mt-3 flex items-center gap-1 text-xs">
+                    <div className="mt-2 sm:mt-3 flex items-center gap-1 text-xs">
                       <HiOutlineClock className="text-sm" />
-                      <span className="text-gray-500 dark:text-gray-400">Vence: </span>
-                      <Text size="xs" weight={loan?.isOverdue ? "semibold" : "medium"} color={loan?.isOverdue ? "red" : "base"}>
+                      <span className="text-gray-500 dark:text-gray-400 hidden sm:inline">Vence: </span>
+                      <p className={`text-[10px] sm:text-xs ${loan?.isOverdue ? 'font-semibold text-red-600 dark:text-red-400' : ''}`}>
                         {new Date(loan?.dueDate).toLocaleDateString()}
-                      </Text>
+                      </p>
                     </div>
                   )}
                 </div>
 
-                <HiOutlineChevronRight className="text-gray-400 text-xl ml-4" />
+                <HiOutlineChevronRight className="text-gray-400 text-lg sm:text-xl ml-auto flex-shrink-0" />
               </div>
             </Link>
           ))}

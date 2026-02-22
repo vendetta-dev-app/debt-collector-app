@@ -1,5 +1,5 @@
 import PageTable from '@/components/tables/PageTable'
-import TransactionsTable from '@/modules/transactions/components/TransactionsTable'
+import AllTransactionsTable from '@/modules/transactions/components/AllTransactionsTable'
 
 
 const TransactionsPage = () => {
@@ -7,7 +7,7 @@ const TransactionsPage = () => {
       <PageTable>
         <PageTable.Header title="Mis Transacciones"/>
         <PageTable.Table>
-          <TransactionsTable/>
+          <AllTransactionsTable/>
         </PageTable.Table>
       </PageTable>
   )

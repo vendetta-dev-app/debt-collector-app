@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Button } from 'flowbite-react'
 import { useNavigate } from 'react-router-dom'
 import { IoIosArrowForward } from 'react-icons/io'
-import { TbCoins, TbPlus, TbRouteSquare, TbUsers } from 'react-icons/tb'
+import { TbCoins, TbRoute, TbMoneybag, TbHome } from 'react-icons/tb'
 import { Text } from '@components'
 import useMe from '@auth/hooks/useMe'
 
@@ -10,86 +10,87 @@ const HomePage = () => {
   const me = useMe()
   const navigate = useNavigate()
 
-  const buttons = useMemo(() => ([
+  const quickActions = useMemo(() => ([
     {
-      label: 'Agregar cliente',
-      icon: TbUsers,
-      onClick: () => navigate('/clients'),
-    },
-    {
-      label: 'Agregar transaccion',
-      icon: TbCoins,
-      onClick: () => navigate('/transactions'),
-    },
-    {
-      label: 'Crear préstamo',
-      icon: TbRouteSquare,
+      label: 'Mis Rutas',
+      icon: TbRoute,
       onClick: () => navigate('/routes'),
+      description: 'Consulta las rutas asignadas y sus préstamos',
+      color: 'blue',
     },
-  ]), [])
-
-  const arr = useMemo(() => ([
     {
-      label: 'Clientes',
-      icon: TbUsers,
-      onClick: () => navigate('/clients'),
-      // colorClassName: 'bg-primary-400/10 text-primary-800',
+      label: 'Mis Préstamos',
+      icon: TbMoneybag,
+      onClick: () => navigate('/loans'),
+      description: 'Lista completa de préstamos con filtros',
+      color: 'green',
     },
     {
       label: 'Transacciones',
       icon: TbCoins,
       onClick: () => navigate('/transactions'),
-      // colorClassName: 'bg-purple-500/10 text-purple-800',
-    },
-    {
-      label: 'Rutas',
-      icon: TbRouteSquare,
-      onClick: () => navigate('/routes'),
-      // colorClassName: 'bg-orange-500/10 text-orange-800',
+      description: 'Historial de transacciones',
+      color: 'purple',
     },
   ]), [])
 
   return (
-      <div className="p-4">
-        <div className="p-4 bg-gradient-to-br from-orange-100 to-primary-100 rounded-md">
-          <img src="/coin.svg" alt="" className="w-8 mb-4"/>
-          <Text color="primary" size="lg" weight="bold">
-            Bienvenido, {me?.fullName}
+      <div className="p-3 sm:p-4 space-y-4 sm:space-y-6">
+        {/* Welcome Card */}
+        <div className="p-4 sm:p-6 bg-gradient-to-br from-orange-100 to-blue-100 dark:from-orange-900/20 dark:to-blue-900/20 rounded-lg shadow-sm">
+          <img src="/coin.svg" alt="" className="w-8 h-8 sm:w-10 sm:h-10 mb-3 sm:mb-4"/>
+          <Text color="primary" size="lg" weight="bold" className="sm:text-xl">
+            Bienvenido, {me?.fullName?.split(' ')[0]}
           </Text>
           <Text color="gray" size="sm" weight="semibold">
-            Administra los prestamos a tu clientes
+            Gestiona tus cobros y préstamos de manera eficiente
           </Text>
         </div>
-        <Text className="mt-8" weight="semibold">
-          Acciones principales
-        </Text>
-        <div className="mt-4 grid gap-2">
-          {
-            buttons.map(({ icon: Icon, label, onClick }) => (
-                <Button key={label} outline className="flex items-center justify-start gap-2">
-                  <TbPlus className="w-5 h-5"/>
-                  {label}
-                </Button>
-            ))
-          }
+
+        {/* Quick Stats */}
+        <div>
+          <Text className="mb-3 sm:mb-4" weight="semibold" size="lg">
+            Acciones Rápidas
+          </Text>
+          <div className="grid gap-2 sm:gap-3">
+            {
+              quickActions.map(({ icon: Icon, label, onClick, description, color }) => (
+                <button
+                  key={label}
+                  onClick={onClick}
+                  className="w-full flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700 text-left hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <div className={`p-2 sm:p-3 rounded-lg bg-${color}-50 dark:bg-${color}-900/20`}>
+                    <Icon className={`w-5 h-5 sm:w-6 sm:h-6 text-${color}-600 dark:text-${color}-400`}/>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <Text size="base" weight="semibold">
+                      {label}
+                    </Text>
+                    <Text size="sm" color="gray" className="hidden sm:block line-clamp-1">
+                      {description}
+                    </Text>
+                  </div>
+                  <IoIosArrowForward className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 flex-shrink-0"/>
+                </button>
+              ))
+            }
+          </div>
         </div>
-        <Text className="mt-8" weight="semibold">
-          Navegar a:
-        </Text>
-        <div className="mt-4 grid gap-2">
-          {
-            arr.map(({ icon: Icon, label, onClick }) => (
-                <Button key={label} outline className="flex items-center justify-start gap-2">
-                  <Icon className="w-5 h-5"/>
-                  <span className="flex-grow text-start">
-                    {label}
-                  </span>
-                  <span className="block shrink-0">
-                    <IoIosArrowForward/>
-                  </span>
-                </Button>
-            ))
-          }
+
+        {/* Info Card */}
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 sm:p-4">
+          <div className="flex gap-3">
+            <TbHome className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5"/>
+            <div>
+              <Text size="sm" weight="semibold" color="blue">
+                App de Cobradores
+              </Text>
+              <Text size="sm" color="gray" className="mt-1">
+                Usa el menú (☰) para navegar. Puedes ver tus rutas, préstamos y registrar pagos.
+              </Text>
+            </div>
+          </div>
         </div>
       </div>
   )

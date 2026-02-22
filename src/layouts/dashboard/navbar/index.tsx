@@ -8,7 +8,7 @@ import SidebarButton from './SidebarButton'
 const navbarTheme = createTheme({
   navbar: {
     root: {
-      base: 'bg-white px-2 py-2.5 bg-white border-b border-gray-100 sm:px-4 dark:border-gray-700 dark:bg-gray-800',
+      base: 'bg-white px-3 py-3 bg-white border-b border-gray-200 sm:px-4 dark:border-gray-700 dark:bg-gray-800 sticky top-0 z-30',
     },
   },
 })
@@ -19,16 +19,18 @@ const DashboardNavbar = () => {
   return (
       <ThemeProvider theme={navbarTheme}>
         <Navbar fluid>
-          <NavbarBrand>
+          <NavbarBrand className="gap-3">
             <SidebarButton/>
-            <Text as="h3" color="primary" weight="bold">
+            <Text as="h3" color="primary" weight="bold" className="hidden sm:block">
               {title}
             </Text>
+            <Text as="h3" color="primary" weight="bold" className="sm:hidden text-base">
+              {title === 'Inicio' ? 'Inicio' : title === 'Mis Rutas' ? 'Rutas' : title === 'Mis Préstamos' ? 'Préstamos' : title}
+            </Text>
           </NavbarBrand>
-          <div className="flex items-center gap-2 md:order-2">
+          <div className="flex items-center gap-1 md:gap-2 md:order-2 ml-auto">
             <ToggleDarkModeButton/>
             <UserDropdown/>
-            {/*<NavbarToggle/>*/}
           </div>
         </Navbar>
       </ThemeProvider>

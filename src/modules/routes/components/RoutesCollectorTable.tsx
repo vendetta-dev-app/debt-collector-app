@@ -50,9 +50,9 @@ const RoutesCollectorTable = () => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {/* Summary cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
           <div className="flex items-center justify-between">
             <div>
@@ -91,7 +91,53 @@ const RoutesCollectorTable = () => {
       {/* Routes list */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          {/* Mobile card view */}
+          <div className="md:hidden space-y-3 p-3">
+            {routes.map((route) => (
+              <div key={route?.id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex-1 min-w-0">
+                    <Text size="sm" weight="semibold">
+                      {route?.name}
+                    </Text>
+                    <Text size="xs" color="gray">
+                      {route?.city?.name}, {route?.city?.region?.name}
+                    </Text>
+                  </div>
+                  {(route?.pendingLoansCount || 0) > 0 ? (
+                    <Badge color="warning">
+                      {route?.pendingLoansCount} pendientes
+                    </Badge>
+                  ) : (
+                    <Badge color="success">
+                      0 pendientes
+                    </Badge>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Balance</p>
+                    <Text size="sm" weight="semibold" color="success">
+                      <CurrencyCell value={route?.currentBalance || 0} />
+                    </Text>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Préstamos</p>
+                    <p className="text-sm font-semibold">{route?.loansCount || 0}</p>
+                  </div>
+                </div>
+                <Link
+                  to={`/routes/${route?.id}`}
+                  className="block w-full text-center py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Ver Detalles
+                </Link>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop table view */}
+          <table className="hidden md:table min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">

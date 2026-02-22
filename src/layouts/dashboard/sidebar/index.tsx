@@ -3,7 +3,7 @@ import SidebarLink from '@/layouts/dashboard/sidebar/SidebarLink'
 import NiceModal, { useModal } from '@ebay/nice-modal-react'
 import { Drawer, DrawerHeader, DrawerItems, Sidebar, SidebarItemGroup, SidebarItems } from 'flowbite-react'
 import { HiMenuAlt1 } from 'react-icons/hi'
-import { TbCoins, TbHome, TbMoneybag, TbRouteSquare, TbUserCheck, TbUsers } from 'react-icons/tb'
+import { TbCoins, TbHome, TbMoneybag, TbRoute } from 'react-icons/tb'
 
 const items: ISidebarItem[] = [
   {
@@ -12,28 +12,32 @@ const items: ISidebarItem[] = [
     href: '/',
   },
   {
-    name: 'Clientes',
-    icon: TbUsers,
-    href: '/clients',
+    name: 'Mis Rutas',
+    icon: TbRoute,
+    href: '/routes',
+  },
+  {
+    name: 'Mis Préstamos',
+    icon: TbMoneybag,
+    href: '/loans',
   },
   {
     name: 'Transacciones',
     icon: TbCoins,
     href: '/transactions',
   },
-  {
-    name: 'Rutas',
-    icon: TbRouteSquare,
-    href: '/routes',
-  },
 ]
 
 const DashboardSidebar = NiceModal.create(() => {
   const modal = useModal()
   return (
-    <Drawer open={modal.visible} onClose={() => modal.hide()}>
+    <Drawer
+      open={modal.visible}
+      onClose={() => modal.hide()}
+      position="left"
+    >
       <DrawerHeader title="Menú" titleIcon={HiMenuAlt1} />
-      <DrawerItems>
+      <DrawerItems className="overflow-y-auto">
         <Sidebar className="[&>div]:bg-transparent [&>div]:p-0">
           <SidebarItems>
             <SidebarItemGroup>

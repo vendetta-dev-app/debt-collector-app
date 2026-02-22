@@ -20,17 +20,19 @@ const SidebarLink: FC<Props> = ({ item }) => {
   const isActive = location.pathname === item.href
 
   return (
-      <SidebarItem
-          icon={item.icon}
-          className={clsx(
-              'lg:text-sm lg:[&_svg]:h-4 lg:[&_svg]:w-4 font-semibold hover:cursor-pointer',
-              isActive && 'bg-primary-600/10',
-              isActive && '[&_svg]:text-primary-800 dark:[&_svg]:text-primary-600 text-primary-800 dark:text-primary-600',
-          )}
-          onClick={() => navigate(item.href)}
-      >
-        {item.name}
-      </SidebarItem>
+    <SidebarItem
+        icon={item.icon}
+        className={clsx(
+            'w-full text-base font-semibold rounded-lg transition-all duration-200',
+            'hover:bg-gray-100 dark:hover:bg-gray-700',
+            'flex items-center gap-3 px-4 py-3',
+            isActive && 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300',
+            !isActive && 'text-gray-700 dark:text-gray-300',
+        )}
+        onClick={() => navigate(item.href)}
+    >
+      {item.name}
+    </SidebarItem>
   )
 }
 

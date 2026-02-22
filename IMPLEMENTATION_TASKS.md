@@ -16,13 +16,19 @@ Create a dashboard showing all routes assigned to the collector with key metrics
 
 ---
 
-### 📋 Task 2: Route Detail Page
+### ✅ Task 2: Route Detail Page
 Show detailed information about a specific route.
 
-- [ ] Display route information (balance, city, manager)
-- [ ] Show list of loans in the route
-- [ ] Add loan cards with status indicators
-- [ ] Show overdue loans prominently
+- [x] Display route information (balance, city, manager)
+- [x] Show list of loans in the route
+- [x] Add loan cards with status indicators
+- [x] Show overdue loans prominently
+- [x] Add summary stats (total, active, overdue)
+- [x] Separate section for overdue loans with visual emphasis
+- [x] Add links to loan detail pages
+- [x] Create placeholder for loan detail page
+
+**Status:** ✅ COMPLETED
 
 ---
 
@@ -56,6 +62,6 @@ Create modal to record loan payments.
 
 ---
 
-## 🎯 Starting with Task 1: Dashboard - Collector's Routes List
+## 🎯 Completed: Task 2 - Route Detail Page
 
-This will be the main landing page showing all routes assigned to the logged-in collector.
+Enhanced route detail page with comprehensive loan information and visual indicators.

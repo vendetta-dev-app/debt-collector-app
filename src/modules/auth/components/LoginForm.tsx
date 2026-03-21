@@ -1,15 +1,16 @@
-import { FormGrid, Text } from '@/components'
-import { useMutation } from '@apollo/client'
-import AuthFormField from '@auth/components/AuthFormField'
-import { useAuth } from '@auth/hooks'
-import TokenAuthMutation from '@auth/mutations/tokenAuthMutation'
-import { formErrors } from '@constants'
-import { Alert, Button } from 'flowbite-react'
-import { Form, Formik } from 'formik'
-import { FC, PropsWithChildren, useState } from 'react'
-import { HiInformationCircle } from 'react-icons/hi'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import type { FC, PropsWithChildren } from 'react'
+import { useState } from 'react'
 import * as Yup from 'yup'
+import { Form, Formik } from 'formik'
+import { useMutation } from '@apollo/client'
+import { Alert, Button, Spinner } from 'flowbite-react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { HiInformationCircle, HiLockClosed, HiMail } from 'react-icons/hi'
+import { useAuth } from '@auth/hooks'
+import { FormGrid } from '@components'
+import { formErrors } from '@constants'
+import FormField from '@/components/forms/FormField'
+import TokenAuthMutation from '@auth/mutations/tokenAuthMutation'
 
 interface Values {
   email: string
@@ -61,46 +62,51 @@ const LoginForm: FC<PropsWithChildren> = () => {
   }
 
   return (
-    <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
-      {
-        ({ isSubmitting }) => (
-          <Form>
-            <Text as="h5" className="text-center" size="2xl" weight="extrabold">
-              Iniciar sesión
-            </Text>
-            <Text color="gray" className="mb-12 text-center" weight="medium">
-              Inicia sesión con tu cuenta de cobrador
-            </Text>
-            {
-              (error || roleError) &&
-              <Alert color={roleError ? "warning" : "failure"} icon={HiInformationCircle} className="mb-8">
-                {roleError || error?.message}
-              </Alert>
-            }
-            <FormGrid>
-              <AuthFormField
-                label="Correo"
-                name="email"
-                id="email"
-                type="text"
-                placeholder="Username" />
-              <AuthFormField
-                label="Password"
-                name="password"
-                id="password"
-                type="password"
-                placeholder="Password" />
-            </FormGrid>
-            <Button
-              className="w-full mt-8"
-              disabled={isSubmitting}
-              type="submit">
-              {isSubmitting ? 'Iniciando...' : 'Iniciar Sesion'}
-            </Button>
-          </Form>
-        )
-      }
-    </Formik>
+      <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
+        {
+          ({ isSubmitting }) => (
+              <Form>
+                {
+                    (error || roleError) &&
+                    <Alert color={roleError ? 'warning' : 'failure'} icon={HiInformationCircle} className="mb-6">
+                      {roleError || error?.message}
+                    </Alert>
+                }
+                <FormGrid>
+                  <FormField
+                      label="Correo electrónico"
+                      name="email"
+                      placeholder="correo@ejemplo.com"
+                      icon={HiMail}
+                  />
+                  <FormField
+                      label="Contraseña"
+                      name="password"
+                      placeholder="••••••••"
+                      type="password"
+                      icon={HiLockClosed}
+                  />
+                </FormGrid>
+
+                <Button
+                    type="submit"
+                    className="w-full mt-8"
+                    disabled={isSubmitting}
+                >
+                  {
+                    isSubmitting ?
+                        <span className="flex items-center justify-center gap-2">
+                          <Spinner size="sm"/>
+                          Iniciando sesión...
+                        </span>
+                        :
+                        <span>Iniciar sesión</span>
+                  }
+                </Button>
+              </Form>
+          )
+        }
+      </Formik>
   )
 }
 

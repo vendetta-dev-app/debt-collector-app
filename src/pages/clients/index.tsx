@@ -174,19 +174,13 @@ const ClientsPage = () => {
           </Button>
         </div>
 
-        {/* Search bar */}
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <HiOutlineSearch className="w-5 h-5 text-gray-400"/>
-          </div>
-          <TextInput
-              type="text"
-              placeholder="Buscar por nombre, alias, RUT..."
-              value={search}
-              onChange={handleSearchChange}
-              className="pl-10"
-          />
-        </div>
+        <TextInput
+            icon={HiOutlineSearch}
+            type="text"
+            placeholder="Buscar por nombre, alias, RUT..."
+            value={search}
+            onChange={handleSearchChange}
+        />
 
         {/* Loading state */}
         {loading && !data && (

@@ -274,6 +274,50 @@ export type CollectorNodeEdge = {
   node?: Maybe<CollectorNode>;
 };
 
+/** Node for collector queries without restrictive filterset */
+export type CollectorTransactionNode = Node & {
+  __typename?: "CollectorTransactionNode";
+  amount: Scalars["Decimal"]["output"];
+  associatedProfile?: Maybe<UserNode>;
+  createdAt: Scalars["DateTime"]["output"];
+  description: Scalars["String"]["output"];
+  /** The ID of the object */
+  id: Scalars["ID"]["output"];
+  maker?: Maybe<UserNode>;
+  objectId: Scalars["Int"]["output"];
+  transactionType: TransactionsTransactionTransactionTypeChoices;
+  updatedAt: Scalars["DateTime"]["output"];
+  voided: Scalars["Boolean"]["output"];
+};
+
+export type CollectorTransactionNodeConnection = {
+  __typename?: "CollectorTransactionNodeConnection";
+  /** Contains the nodes in this connection. */
+  edges: Array<Maybe<CollectorTransactionNodeEdge>>;
+  /** Pagination data for this connection. */
+  pageInfo: PageInfo;
+};
+
+/** A Relay edge containing a `CollectorTransactionNode` and its cursor. */
+export type CollectorTransactionNodeEdge = {
+  __typename?: "CollectorTransactionNodeEdge";
+  /** A cursor for use in pagination */
+  cursor: Scalars["String"]["output"];
+  /** The item at the end of the edge */
+  node?: Maybe<CollectorTransactionNode>;
+};
+
+/** Simple transaction type for collectors (not a Node, no relay connection) */
+export type CollectorTransactionType = {
+  __typename?: "CollectorTransactionType";
+  amount?: Maybe<Scalars["Decimal"]["output"]>;
+  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  description?: Maybe<Scalars["String"]["output"]>;
+  id?: Maybe<Scalars["String"]["output"]>;
+  transactionType?: Maybe<Scalars["String"]["output"]>;
+  voided?: Maybe<Scalars["Boolean"]["output"]>;
+};
+
 export type CreateAdminInput = {
   clientMutationId?: InputMaybe<Scalars["String"]["input"]>;
   email: Scalars["String"]["input"];
@@ -336,7 +380,10 @@ export type CreateLoanInput = {
   clientMutationId?: InputMaybe<Scalars["String"]["input"]>;
   /** Due date in YYYY-MM-DD format */
   dueDate?: InputMaybe<Scalars["String"]["input"]>;
-  interestRate: Scalars["Decimal"]["input"];
+  /** Number of installments (1-90) */
+  installments?: InputMaybe<Scalars["Int"]["input"]>;
+  /** Payment frequency: DAILY, WEEKLY, or MONTHLY */
+  paymentFrequency?: InputMaybe<Scalars["String"]["input"]>;
   routeId: Scalars["String"]["input"];
 };
 
@@ -423,8 +470,6 @@ export type LoanNode = Node & {
   id: Scalars["ID"]["output"];
   /** Cantidad de cuotas (mínimo 1, máximo 90) */
   installments: Scalars["Int"]["output"];
-  /** Tasa de interés permitida: 0%, 10% o 20% */
-  interestRate: LoansLoanInterestRateChoices;
   isApproved: Scalars["Boolean"]["output"];
   isFullyPaid?: Maybe<Scalars["Boolean"]["output"]>;
   isOverdue?: Maybe<Scalars["Boolean"]["output"]>;
@@ -462,16 +507,6 @@ export type LoanNodeEdge = {
   /** The item at the end of the edge */
   node?: Maybe<LoanNode>;
 };
-
-/** An enumeration. */
-export enum LoansLoanInterestRateChoices {
-  /** 0% */
-  A_0 = "A_0",
-  /** 10% */
-  A_10 = "A_10",
-  /** 20% */
-  A_20 = "A_20",
-}
 
 /** An enumeration. */
 export enum LoansLoanPaymentFrequencyChoices {
@@ -732,6 +767,7 @@ export type Query = {
   route?: Maybe<RouteNode>;
   routesByAdmin?: Maybe<RouteNodeConnection>;
   transactions?: Maybe<TransactionNodeConnection>;
+  transactionsByCollector?: Maybe<Array<Maybe<CollectorTransactionType>>>;
 };
 
 export type QueryCitiesArgs = {
@@ -864,11 +900,19 @@ export type QueryRoutesByAdminArgs = {
 
 export type QueryTransactionsArgs = {
   after?: InputMaybe<Scalars["String"]["input"]>;
+  amount?: InputMaybe<Scalars["Decimal"]["input"]>;
+  associatedProfile?: InputMaybe<Scalars["ID"]["input"]>;
   before?: InputMaybe<Scalars["String"]["input"]>;
+  createdAt?: InputMaybe<Scalars["DateTime"]["input"]>;
+  description?: InputMaybe<Scalars["String"]["input"]>;
   first?: InputMaybe<Scalars["Int"]["input"]>;
   last?: InputMaybe<Scalars["Int"]["input"]>;
+  maker?: InputMaybe<Scalars["ID"]["input"]>;
   offset?: InputMaybe<Scalars["Int"]["input"]>;
   routeId?: InputMaybe<Scalars["String"]["input"]>;
+  transactionType?: InputMaybe<TransactionsTransactionTransactionTypeChoices>;
+  updatedAt?: InputMaybe<Scalars["DateTime"]["input"]>;
+  voided?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type Refresh = {
@@ -997,6 +1041,7 @@ export type RouteNodeEdge = {
   node?: Maybe<RouteNode>;
 };
 
+/** Node for admin queries with filterset */
 export type TransactionNode = Node & {
   __typename?: "TransactionNode";
   amount: Scalars["Decimal"]["output"];
@@ -1127,8 +1172,8 @@ export type UserNode = Node & {
   phoneNumber1: Scalars["String"]["output"];
   phoneNumber2?: Maybe<Scalars["String"]["output"]>;
   role: AccountsUserRoleChoices;
-  transactionsAssociated: TransactionNodeConnection;
-  transactionsMade: TransactionNodeConnection;
+  transactionsAssociated: CollectorTransactionNodeConnection;
+  transactionsMade: CollectorTransactionNodeConnection;
   updatedAt: Scalars["DateTime"]["output"];
   voidedPayments: PaymentNodeConnection;
 };
@@ -1147,7 +1192,6 @@ export type UserNodeTransactionsAssociatedArgs = {
   first?: InputMaybe<Scalars["Int"]["input"]>;
   last?: InputMaybe<Scalars["Int"]["input"]>;
   offset?: InputMaybe<Scalars["Int"]["input"]>;
-  routeId?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type UserNodeTransactionsMadeArgs = {
@@ -1156,7 +1200,6 @@ export type UserNodeTransactionsMadeArgs = {
   first?: InputMaybe<Scalars["Int"]["input"]>;
   last?: InputMaybe<Scalars["Int"]["input"]>;
   offset?: InputMaybe<Scalars["Int"]["input"]>;
-  routeId?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type UserNodeVoidedPaymentsArgs = {
@@ -1385,6 +1428,37 @@ export type ClientsByCollectorQuery = {
   } | null;
 };
 
+export type CreateLoanMutationVariables = Exact<{
+  input: CreateLoanInput;
+}>;
+
+export type CreateLoanMutation = {
+  __typename?: "Mutation";
+  createLoan?: {
+    __typename?: "CreateLoanPayload";
+    loan?: {
+      __typename?: "LoanNode";
+      id: string;
+      amount: any;
+      installments: number;
+      paymentFrequency: LoansLoanPaymentFrequencyChoices;
+      isApproved: boolean;
+      isRejected: boolean;
+      dueDate?: any | null;
+      createdAt: any;
+      totalAmount?: any | null;
+      status?: string | null;
+      route: { __typename?: "RouteNode"; id: string; name: string };
+      client: {
+        __typename?: "ClientNode";
+        id: string;
+        alias?: string | null;
+        user: { __typename?: "UserNode"; id: string; fullName: string };
+      };
+    } | null;
+  } | null;
+};
+
 export type CreatePaymentMutationVariables = Exact<{
   input: CreatePaymentInput;
 }>;
@@ -1425,7 +1499,6 @@ export type LoanDetailQuery = {
     __typename?: "LoanNode";
     id: string;
     amount: any;
-    interestRate: LoansLoanInterestRateChoices;
     installments: number;
     paymentFrequency: LoansLoanPaymentFrequencyChoices;
     isApproved: boolean;
@@ -1480,7 +1553,6 @@ export type LoansByClientQuery = {
         __typename?: "LoanNode";
         id: string;
         amount: any;
-        interestRate: LoansLoanInterestRateChoices;
         installments: number;
         paymentFrequency: LoansLoanPaymentFrequencyChoices;
         isApproved: boolean;
@@ -1539,7 +1611,6 @@ export type LoansByCollectorQuery = {
         __typename?: "LoanNode";
         id: string;
         amount: any;
-        interestRate: LoansLoanInterestRateChoices;
         installments: number;
         paymentFrequency: LoansLoanPaymentFrequencyChoices;
         isApproved: boolean;
@@ -1597,7 +1668,6 @@ export type LoansByRouteQuery = {
         __typename?: "LoanNode";
         id: string;
         amount: any;
-        interestRate: LoansLoanInterestRateChoices;
         installments: number;
         paymentFrequency: LoansLoanPaymentFrequencyChoices;
         isApproved: boolean;
@@ -1650,7 +1720,6 @@ export type OverdueLoansQuery = {
         __typename?: "LoanNode";
         id: string;
         amount: any;
-        interestRate: LoansLoanInterestRateChoices;
         installments: number;
         paymentFrequency: LoansLoanPaymentFrequencyChoices;
         isApproved: boolean;
@@ -1901,6 +1970,23 @@ export type AllTransactionsQuery = {
       hasPreviousPage: boolean;
     };
   } | null;
+};
+
+export type TransactionsByCollectorQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type TransactionsByCollectorQuery = {
+  __typename?: "Query";
+  transactionsByCollector?: Array<{
+    __typename?: "CollectorTransactionType";
+    id?: string | null;
+    transactionType?: string | null;
+    amount?: any | null;
+    description?: string | null;
+    createdAt?: any | null;
+    voided?: boolean | null;
+  } | null> | null;
 };
 
 export type TransactionsByRouteIdQueryVariables = Exact<{
@@ -2673,6 +2759,153 @@ export const ClientsByCollectorDocument = {
   ClientsByCollectorQuery,
   ClientsByCollectorQueryVariables
 >;
+export const CreateLoanDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "CreateLoan" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "CreateLoanInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "createLoan" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "loan" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "amount" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "installments" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "paymentFrequency" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "isApproved" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "isRejected" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "dueDate" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "createdAt" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "totalAmount" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "status" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "route" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "name" },
+                            },
+                          ],
+                        },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "client" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "alias" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "user" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "fullName" },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<CreateLoanMutation, CreateLoanMutationVariables>;
 export const CreatePaymentDocument = {
   kind: "Document",
   definitions: [
@@ -2828,10 +3061,6 @@ export const LoanDetailDocument = {
               selections: [
                 { kind: "Field", name: { kind: "Name", value: "id" } },
                 { kind: "Field", name: { kind: "Name", value: "amount" } },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "interestRate" },
-                },
                 {
                   kind: "Field",
                   name: { kind: "Name", value: "installments" },
@@ -3032,10 +3261,6 @@ export const LoansByClientDocument = {
                             {
                               kind: "Field",
                               name: { kind: "Name", value: "amount" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "interestRate" },
                             },
                             {
                               kind: "Field",
@@ -3296,10 +3521,6 @@ export const LoansByCollectorDocument = {
                             {
                               kind: "Field",
                               name: { kind: "Name", value: "amount" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "interestRate" },
                             },
                             {
                               kind: "Field",
@@ -3584,10 +3805,6 @@ export const LoansByRouteDocument = {
                             },
                             {
                               kind: "Field",
-                              name: { kind: "Name", value: "interestRate" },
-                            },
-                            {
-                              kind: "Field",
                               name: { kind: "Name", value: "installments" },
                             },
                             {
@@ -3841,10 +4058,6 @@ export const OverdueLoansDocument = {
                             {
                               kind: "Field",
                               name: { kind: "Name", value: "amount" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "interestRate" },
                             },
                             {
                               kind: "Field",
@@ -4874,6 +5087,42 @@ export const AllTransactionsDocument = {
 } as unknown as DocumentNode<
   AllTransactionsQuery,
   AllTransactionsQueryVariables
+>;
+export const TransactionsByCollectorDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "TransactionsByCollector" },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "transactionsByCollector" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "transactionType" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "amount" } },
+                { kind: "Field", name: { kind: "Name", value: "description" } },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+                { kind: "Field", name: { kind: "Name", value: "voided" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  TransactionsByCollectorQuery,
+  TransactionsByCollectorQueryVariables
 >;
 export const TransactionsByRouteIdDocument = {
   kind: "Document",

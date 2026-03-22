@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client'
-import AllTransactionsQuery from '@/modules/transactions/queries/AllTransactionsQuery'
+import TransactionsByCollectorQuery from '@/modules/transactions/queries/TransactionsByCollectorQuery'
 import { Badge, Spinner } from 'flowbite-react'
 import {
   HiOutlineCash,
@@ -22,15 +22,12 @@ const transactionTypes: Record<string, { label: string; color: string; icon: any
 }
 
 const CollectorTransactionsTable = () => {
-  // Query transactions - backend auto-filters by collector's route
-  const { data, loading, error, refetch } = useQuery(AllTransactionsQuery, {
-    variables: {
-      first: 100,
-    },
+  // Query transactions - filtered by collector's route
+  const { data, loading, error, refetch } = useQuery(TransactionsByCollectorQuery, {
     fetchPolicy: 'cache-and-network',
   })
 
-  const transactions = data?.transactions?.edges?.map((edge: any) => edge?.node).filter(Boolean) || []
+  const transactions = data?.transactionsByCollector || []
 
   if (loading && !data) {
     return (

@@ -7,7 +7,6 @@ const LoansByCollectorQuery = graphql(`
         node {
           id
           amount
-          interestRate
           installments
           paymentFrequency
           isApproved

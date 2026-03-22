@@ -5,6 +5,7 @@ import LoginPage from '@/pages/auth/login'
 import RoutePage from '@/pages/routes/route'
 import TransactionsPage from '@/pages/transactions'
 import LoansPage from '@/pages/loans'
+import CreateLoanPage from '@/pages/loans/new'
 import LoanDetailPage from '@/pages/loans/route'
 import ClientsPage from '@/pages/clients'
 import CreateClientPage from '@/pages/clients/new'
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
           {
             path: '/loans',
             element: <LoansPage/>,
+          },
+          {
+            path: '/loans/new',
+            element: <CreateLoanPage/>,
           },
           {
             path: '/loans/:loanId',

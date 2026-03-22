@@ -170,7 +170,7 @@ const LoanDetailPage = () => {
             <div>
               <p className="text-sm text-purple-600 dark:text-purple-400 font-medium">Tasa</p>
               <p className="text-xl font-bold text-purple-900 dark:text-purple-100">
-                {loan.interestRate === 'A_0' ? '0%' : loan.interestRate === 'A_10' ? '10%' : '20%'}
+                20%
               </p>
             </div>
             <HiOutlineCreditCard className="text-3xl text-purple-500" />
@@ -289,9 +289,9 @@ const LoanDetailPage = () => {
             color="blue"
             size="lg"
             onClick={() => NiceModal.show(CreatePaymentModal, {
-              loanId: loan.id,
-              clientId: loan.client?.id,
-              pendingBalance: loan.pendingBalance,
+              loanId: loan?.id,
+              clientId: loan?.client?.id,
+              pendingBalance: loan?.pendingBalance,
               onPaymentSuccess: handlePaymentSuccess
             })}
           >

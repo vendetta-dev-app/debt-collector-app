@@ -7,3 +7,9 @@ export { LoansFilterBar } from './LoansFilterBar'
 export { FilterTab } from './FilterTab'
 export { LoansLoadingState } from './LoansLoadingState'
 export { LoansEmptyState } from './LoansEmptyState'
+
+// Forms
+export { default as CreateLoanForm } from './CreateLoanForm'
+
+// Modals
+export { default as CreatePaymentModal } from './CreatePaymentModal'

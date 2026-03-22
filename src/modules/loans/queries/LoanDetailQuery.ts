@@ -5,7 +5,6 @@ const LoanDetailQuery = graphql(`
     loan(id: $id) {
       id
       amount
-      interestRate
       installments
       paymentFrequency
       isApproved

@@ -4,6 +4,9 @@ directive @specifiedBy(
   url: String!
 ) on SCALAR
 
+"""Indicates an Input Object is a OneOf Input Object."""
+directive @oneOf on INPUT_OBJECT
+
 """An enumeration."""
 enum AccountsUserRoleChoices {
   """Administrator"""
@@ -122,7 +125,15 @@ type ClientNode implements Node {
   addressLine1: String!
   addressLine2: String
   neighborhood: String!
-  collector: CollectorNode!
+  city: String
+
+  """
+  Puntos de referencia para llegar (ej: 'cerca de la plaza', 'edificio color azul')
+  """
+  addressReference: String
+  latitude: Decimal
+  longitude: Decimal
+  route: RouteNode
   isActive: Boolean!
   loans(offset: Int, before: String, after: String, first: Int, last: Int): LoanNodeConnection!
 }
@@ -149,9 +160,8 @@ type CollectorNode implements Node {
   id: ID!
   user: UserNode!
   admin: AdminNode!
+  route: RouteNode
   isActive: Boolean!
-  clients(offset: Int, before: String, after: String, first: Int, last: Int): ClientNodeConnection!
-  routesAsCollector(offset: Int, before: String, after: String, first: Int, last: Int): RouteNodeConnection!
   loans(offset: Int, before: String, after: String, first: Int, last: Int): LoanNodeConnection!
 }
 
@@ -189,17 +199,21 @@ type CreateAdminPayload {
 }
 
 input CreateClientInput {
-  email: String!
+  routeId: String
+  email: String
+  password: String
   fullName: String!
   phoneNumber1: String!
   phoneNumber2: String
-  collectorId: String!
-  password: String!
   alias: String
   identityDocument: String!
   addressLine1: String!
   addressLine2: String
   neighborhood: String!
+  city: String
+  addressReference: String
+  latitude: Float
+  longitude: Float
   clientMutationId: String
 }
 
@@ -301,21 +315,6 @@ scalar DateTime
 
 """The `Decimal` scalar type represents a python Decimal."""
 scalar Decimal
-
-input EditCollectorInput {
-  email: String!
-  fullName: String!
-  phoneNumber1: String!
-  phoneNumber2: String
-  userId: String!
-  isActive: Boolean!
-  clientMutationId: String
-}
-
-type EditCollectorPayload {
-  user: UserNode
-  clientMutationId: String
-}
 
 input EditRouteInput {
   routeId: String!
@@ -486,8 +485,9 @@ type Mutation {
   refreshToken(token: String): Refresh
   createAdmin(input: CreateAdminInput!): CreateAdminPayload
   createManager(input: CreateManagerInput!): CreateManagerPayload
+  updateManager(input: UpdateManagerInput!): UpdateManagerPayload
   createCollector(input: CreateCollectorInput!): CreateCollectorPayload
-  editCollector(input: EditCollectorInput!): EditCollectorPayload
+  updateCollector(input: UpdateCollectorInput!): UpdateCollectorPayload
   createClient(input: CreateClientInput!): CreateClientPayload
   updateClient(input: UpdateClientInput!): UpdateClientPayload
 }
@@ -616,7 +616,6 @@ type Query {
   ): PaymentNodeConnection
   transactions(offset: Int, before: String, after: String, first: Int, last: Int, routeId: String): TransactionNodeConnection
   routesByAdmin(offset: Int, before: String, after: String, first: Int, last: Int): RouteNodeConnection
-  routesByCollector(offset: Int, before: String, after: String, first: Int, last: Int): RouteNodeConnection
   route(id: String!): RouteNode
   city: CityNode
   cities(offset: Int, before: String, after: String, first: Int, last: Int, searchNames: String, searchNames_Icontains: String): CityNodeConnection
@@ -626,6 +625,7 @@ type Query {
   collectorsByAdmin(offset: Int, before: String, after: String, first: Int, last: Int, isActive: Boolean, fullName: String): CollectorNodeConnection
   managersByAdmin(offset: Int, before: String, after: String, first: Int, last: Int): ManagerNodeConnection
   clientsByAdmin(offset: Int, before: String, after: String, first: Int, last: Int): ClientNodeConnection
+  clientsByCollector(offset: Int, before: String, after: String, first: Int, last: Int): ClientNodeConnection
 }
 
 type Refresh {
@@ -686,11 +686,12 @@ type RouteNode implements Node {
   id: ID!
   name: String!
   city: CityNode!
-  collector: CollectorNode
   administrators(offset: Int, before: String, after: String, first: Int, last: Int): AdminNodeConnection!
   manager: ManagerNode
   createdAt: DateTime!
   updatedAt: DateTime!
+  clients(offset: Int, before: String, after: String, first: Int, last: Int): ClientNodeConnection!
+  collectorProfile: CollectorNode
   loans(offset: Int, before: String, after: String, first: Int, last: Int): LoanNodeConnection!
   startingBalance: Decimal
   currentBalance: Decimal
@@ -775,20 +776,53 @@ enum TransactionsTransactionTransactionTypeChoices {
 }
 
 input UpdateClientInput {
-  email: String!
-  fullName: String
-  phoneNumber1: String
-  phoneNumber2: String
   id: String!
   alias: String
+  phoneNumber1: String
+  phoneNumber2: String
   addressLine1: String
   addressLine2: String
   neighborhood: String
+  fullName: String
+  city: String
+  addressReference: String
+  latitude: Float
+  longitude: Float
   clientMutationId: String
 }
 
 type UpdateClientPayload {
   user: UserNode
+  clientMutationId: String
+}
+
+input UpdateCollectorInput {
+  email: String!
+  fullName: String!
+  phoneNumber1: String!
+  phoneNumber2: String
+  userId: String!
+  isActive: Boolean!
+  clientMutationId: String
+}
+
+type UpdateCollectorPayload {
+  user: UserNode
+  clientMutationId: String
+}
+
+input UpdateManagerInput {
+  userId: String!
+  email: String
+  fullName: String
+  phoneNumber1: String
+  phoneNumber2: String
+  isActive: Boolean
+  clientMutationId: String
+}
+
+type UpdateManagerPayload {
+  manager: ManagerNode
   clientMutationId: String
 }
 

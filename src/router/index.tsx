@@ -2,11 +2,12 @@ import HomePage from '@/pages/home'
 import AuthLayout from '@/layouts/auth'
 import DashboardLayout from '@/layouts/dashboard/index'
 import LoginPage from '@/pages/auth/login'
-import RoutesPage from '@/pages/routes'
 import RoutePage from '@/pages/routes/route'
 import TransactionsPage from '@/pages/transactions'
 import LoansPage from '@/pages/loans'
 import LoanDetailPage from '@/pages/loans/route'
+import ClientsPage from '@/pages/clients'
+import CreateClientPage from '@/pages/clients/new'
 import ProtectedRoutes from '@/router/ProtectedRoutes'
 import AuthProvider from '@auth/contexts/AuthProvider'
 import MeProvider from '@auth/contexts/MeProvider'
@@ -37,18 +38,8 @@ const router = createBrowserRouter([
         element: <TransactionsPage/>,
       },
       {
-        path: '/routes',
-        element: <Outlet/>,
-        children: [
-          {
-            path: '/routes',
-            element: <RoutesPage/>,
-          },
-          {
-            path: '/routes/:routeId',
-            element: <RoutePage/>,
-          },
-        ],
+        path: '/routes/:routeId',
+        element: <RoutePage/>,
       },
       {
         path: '/loans',
@@ -61,6 +52,20 @@ const router = createBrowserRouter([
           {
             path: '/loans/:loanId',
             element: <LoanDetailPage/>,
+          },
+        ],
+      },
+      {
+        path: 'clients',
+        element: <Outlet/>,
+        children: [
+          {
+            path: '/clients',
+            element: <ClientsPage/>,
+          },
+          {
+            path: '/clients/new',
+            element: <CreateClientPage/>,
           },
         ],
       },

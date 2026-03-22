@@ -17,7 +17,7 @@ const RouteDetailQuery = graphql(`
           name
         }
       }
-      collector {
+      collectorProfile {
         id
         user {
           id

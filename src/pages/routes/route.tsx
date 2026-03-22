@@ -1,24 +1,23 @@
+import { PiEmpty } from 'react-icons/pi'
 import { useQuery } from '@apollo/client'
-import { useParams, Link } from 'react-router-dom'
-import RouteByIdQuery from '@/modules/routes/queries/RouteByIdQuery'
-import LoansByRouteQuery from '@/modules/loans/queries/LoansByRouteQuery'
-import { Badge, Spinner, Button } from 'flowbite-react'
+import { Badge, Spinner } from 'flowbite-react'
+import { Link, useParams } from 'react-router-dom'
 import {
+  HiOutlineCheckCircle,
+  HiOutlineChevronRight,
   HiOutlineClock,
   HiOutlineCollection,
   HiOutlineCurrencyDollar,
+  HiOutlineExclamationCircle,
   HiOutlineLocationMarker,
   HiOutlineUserCircle,
   HiOutlineUserGroup,
-  HiOutlineExclamationCircle,
-  HiOutlineCheckCircle,
-  HiOutlineChevronRight,
-  HiOutlinePhone,
 } from 'react-icons/hi'
-import { PiEmpty } from 'react-icons/pi'
 import { Text } from '@components'
 import InfoCard from '@/components/cards/InfoCard'
 import CurrencyCell from '@/components/tables/CurrencyCell'
+import RouteByIdQuery from '@/modules/routes/queries/RouteByIdQuery'
+import LoansByRouteQuery from '@/modules/loans/queries/LoansByRouteQuery'
 import TransactionsByRouteSection from '@/modules/routes/components/TransactionsByRouteSection'
 
 const RoutePage = () => {
@@ -143,15 +142,15 @@ const RoutePage = () => {
         </InfoCard>
         <InfoCard title="Recolector" titleIcon={HiOutlineUserCircle}>
           {
-            route.collector
+            route.collectorProfile
               ?
               <div className="flex justify-between items-center py-2"
               >
                 <Text size="sm" weight="medium">
-                  {route.collector.user.fullName}
+                  {route.collectorProfile.user.fullName}
                 </Text>
-                <Badge color={route.collector.user.isActive ? 'green' : 'red'}>
-                  {route.collector.user.isActive ? 'Activo' : 'Inactivo'}
+                <Badge color={route.collectorProfile.user.isActive ? 'green' : 'red'}>
+                  {route.collectorProfile.user.isActive ? 'Activo' : 'Inactivo'}
                 </Badge>
               </div>
               :

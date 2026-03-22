@@ -7,8 +7,37 @@ const Me = graphql(`
       email
       fullName
       isActive
+      collectorProfile {
+        id
+        route {
+          id
+          name
+          startingBalance
+          currentBalance
+          createdAt
+          updatedAt
+          city {
+            id
+            name
+            region {
+              id
+              name
+            }
+          }
+          manager {
+            id
+            user {
+              id
+              fullName
+              phoneNumber1
+            }
+          }
+          loansCount
+          pendingLoansCount
+        }
+      }
     }
   }
 `)
 
-export default Me;
+export default Me

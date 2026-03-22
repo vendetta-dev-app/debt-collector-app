@@ -5,11 +5,22 @@ const CreateClientMutation = graphql(`
     createClient(input: $input) {
       user {
         id
-        email
         fullName
         phoneNumber1
         phoneNumber2
         isActive
+        clientProfile {
+          id
+          alias
+          identityDocument
+          addressLine1
+          addressLine2
+          neighborhood
+          city
+          addressReference
+          latitude
+          longitude
+        }
       }
     }
   }

@@ -32,12 +32,9 @@ const LoansByRouteQuery = graphql(`
             addressLine1
             neighborhood
             isActive
-            collector {
+            route {
               id
-              user {
-                id
-                fullName
-              }
+              name
             }
           }
           route {

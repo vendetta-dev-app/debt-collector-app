@@ -196,14 +196,19 @@ export type ClientNode = Node & {
   __typename?: "ClientNode";
   addressLine1: Scalars["String"]["output"];
   addressLine2?: Maybe<Scalars["String"]["output"]>;
+  /** Puntos de referencia para llegar (ej: 'cerca de la plaza', 'edificio color azul') */
+  addressReference?: Maybe<Scalars["String"]["output"]>;
   alias?: Maybe<Scalars["String"]["output"]>;
-  collector: CollectorNode;
+  city?: Maybe<Scalars["String"]["output"]>;
   /** The ID of the object */
   id: Scalars["ID"]["output"];
   identityDocument: Scalars["String"]["output"];
   isActive: Scalars["Boolean"]["output"];
+  latitude?: Maybe<Scalars["Decimal"]["output"]>;
   loans: LoanNodeConnection;
+  longitude?: Maybe<Scalars["Decimal"]["output"]>;
   neighborhood: Scalars["String"]["output"];
+  route?: Maybe<RouteNode>;
   user: UserNode;
 };
 
@@ -235,32 +240,15 @@ export type ClientNodeEdge = {
 export type CollectorNode = Node & {
   __typename?: "CollectorNode";
   admin: AdminNode;
-  clients: ClientNodeConnection;
   /** The ID of the object */
   id: Scalars["ID"]["output"];
   isActive: Scalars["Boolean"]["output"];
   loans: LoanNodeConnection;
-  routesAsCollector: RouteNodeConnection;
+  route?: Maybe<RouteNode>;
   user: UserNode;
 };
 
-export type CollectorNodeClientsArgs = {
-  after?: InputMaybe<Scalars["String"]["input"]>;
-  before?: InputMaybe<Scalars["String"]["input"]>;
-  first?: InputMaybe<Scalars["Int"]["input"]>;
-  last?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-};
-
 export type CollectorNodeLoansArgs = {
-  after?: InputMaybe<Scalars["String"]["input"]>;
-  before?: InputMaybe<Scalars["String"]["input"]>;
-  first?: InputMaybe<Scalars["Int"]["input"]>;
-  last?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-};
-
-export type CollectorNodeRoutesAsCollectorArgs = {
   after?: InputMaybe<Scalars["String"]["input"]>;
   before?: InputMaybe<Scalars["String"]["input"]>;
   first?: InputMaybe<Scalars["Int"]["input"]>;
@@ -305,16 +293,20 @@ export type CreateAdminPayload = {
 export type CreateClientInput = {
   addressLine1: Scalars["String"]["input"];
   addressLine2?: InputMaybe<Scalars["String"]["input"]>;
+  addressReference?: InputMaybe<Scalars["String"]["input"]>;
   alias?: InputMaybe<Scalars["String"]["input"]>;
+  city?: InputMaybe<Scalars["String"]["input"]>;
   clientMutationId?: InputMaybe<Scalars["String"]["input"]>;
-  collectorId: Scalars["String"]["input"];
-  email: Scalars["String"]["input"];
+  email?: InputMaybe<Scalars["String"]["input"]>;
   fullName: Scalars["String"]["input"];
   identityDocument: Scalars["String"]["input"];
+  latitude?: InputMaybe<Scalars["Float"]["input"]>;
+  longitude?: InputMaybe<Scalars["Float"]["input"]>;
   neighborhood: Scalars["String"]["input"];
-  password: Scalars["String"]["input"];
+  password?: InputMaybe<Scalars["String"]["input"]>;
   phoneNumber1: Scalars["String"]["input"];
   phoneNumber2?: InputMaybe<Scalars["String"]["input"]>;
+  routeId?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type CreateClientPayload = {
@@ -402,22 +394,6 @@ export type CreateRoutePayload = {
   __typename?: "CreateRoutePayload";
   clientMutationId?: Maybe<Scalars["String"]["output"]>;
   route?: Maybe<RouteNode>;
-};
-
-export type EditCollectorInput = {
-  clientMutationId?: InputMaybe<Scalars["String"]["input"]>;
-  email: Scalars["String"]["input"];
-  fullName: Scalars["String"]["input"];
-  isActive: Scalars["Boolean"]["input"];
-  phoneNumber1: Scalars["String"]["input"];
-  phoneNumber2?: InputMaybe<Scalars["String"]["input"]>;
-  userId: Scalars["String"]["input"];
-};
-
-export type EditCollectorPayload = {
-  __typename?: "EditCollectorPayload";
-  clientMutationId?: Maybe<Scalars["String"]["output"]>;
-  user?: Maybe<UserNode>;
 };
 
 export type EditRouteInput = {
@@ -571,7 +547,6 @@ export type Mutation = {
   createManager?: Maybe<CreateManagerPayload>;
   createPayment?: Maybe<CreatePaymentPayload>;
   createRoute?: Maybe<CreateRoutePayload>;
-  editCollector?: Maybe<EditCollectorPayload>;
   editRoute?: Maybe<EditRoutePayload>;
   refreshToken?: Maybe<Refresh>;
   /**
@@ -581,6 +556,8 @@ export type Mutation = {
   rejectLoan?: Maybe<RejectLoanPayload>;
   tokenAuth?: Maybe<ObtainJsonWebTokenPayload>;
   updateClient?: Maybe<UpdateClientPayload>;
+  updateCollector?: Maybe<UpdateCollectorPayload>;
+  updateManager?: Maybe<UpdateManagerPayload>;
   verifyToken?: Maybe<Verify>;
   /**
    * Voids a payment and creates reversal transaction on the route.
@@ -625,10 +602,6 @@ export type MutationCreateRouteArgs = {
   input: CreateRouteInput;
 };
 
-export type MutationEditCollectorArgs = {
-  input: EditCollectorInput;
-};
-
 export type MutationEditRouteArgs = {
   input: EditRouteInput;
 };
@@ -647,6 +620,14 @@ export type MutationTokenAuthArgs = {
 
 export type MutationUpdateClientArgs = {
   input: UpdateClientInput;
+};
+
+export type MutationUpdateCollectorArgs = {
+  input: UpdateCollectorInput;
+};
+
+export type MutationUpdateManagerArgs = {
+  input: UpdateManagerInput;
 };
 
 export type MutationVerifyTokenArgs = {
@@ -731,6 +712,7 @@ export type Query = {
   cities?: Maybe<CityNodeConnection>;
   city?: Maybe<CityNode>;
   clientsByAdmin?: Maybe<ClientNodeConnection>;
+  clientsByCollector?: Maybe<ClientNodeConnection>;
   collectorsByAdmin?: Maybe<CollectorNodeConnection>;
   loan?: Maybe<LoanNode>;
   loansByClient?: Maybe<LoanNodeConnection>;
@@ -748,7 +730,6 @@ export type Query = {
   regions?: Maybe<RegionNodeConnection>;
   route?: Maybe<RouteNode>;
   routesByAdmin?: Maybe<RouteNodeConnection>;
-  routesByCollector?: Maybe<RouteNodeConnection>;
   transactions?: Maybe<TransactionNodeConnection>;
 };
 
@@ -763,6 +744,14 @@ export type QueryCitiesArgs = {
 };
 
 export type QueryClientsByAdminArgs = {
+  after?: InputMaybe<Scalars["String"]["input"]>;
+  before?: InputMaybe<Scalars["String"]["input"]>;
+  first?: InputMaybe<Scalars["Int"]["input"]>;
+  last?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+export type QueryClientsByCollectorArgs = {
   after?: InputMaybe<Scalars["String"]["input"]>;
   before?: InputMaybe<Scalars["String"]["input"]>;
   first?: InputMaybe<Scalars["Int"]["input"]>;
@@ -868,14 +857,6 @@ export type QueryRoutesByAdminArgs = {
   offset?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
-export type QueryRoutesByCollectorArgs = {
-  after?: InputMaybe<Scalars["String"]["input"]>;
-  before?: InputMaybe<Scalars["String"]["input"]>;
-  first?: InputMaybe<Scalars["Int"]["input"]>;
-  last?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-};
-
 export type QueryTransactionsArgs = {
   after?: InputMaybe<Scalars["String"]["input"]>;
   before?: InputMaybe<Scalars["String"]["input"]>;
@@ -954,7 +935,8 @@ export type RouteNode = Node & {
   __typename?: "RouteNode";
   administrators: AdminNodeConnection;
   city: CityNode;
-  collector?: Maybe<CollectorNode>;
+  clients: ClientNodeConnection;
+  collectorProfile?: Maybe<CollectorNode>;
   createdAt: Scalars["DateTime"]["output"];
   currentBalance?: Maybe<Scalars["Decimal"]["output"]>;
   /** The ID of the object */
@@ -970,6 +952,14 @@ export type RouteNode = Node & {
 };
 
 export type RouteNodeAdministratorsArgs = {
+  after?: InputMaybe<Scalars["String"]["input"]>;
+  before?: InputMaybe<Scalars["String"]["input"]>;
+  first?: InputMaybe<Scalars["Int"]["input"]>;
+  last?: InputMaybe<Scalars["Int"]["input"]>;
+  offset?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
+export type RouteNodeClientsArgs = {
   after?: InputMaybe<Scalars["String"]["input"]>;
   before?: InputMaybe<Scalars["String"]["input"]>;
   first?: InputMaybe<Scalars["Int"]["input"]>;
@@ -1057,11 +1047,14 @@ export enum TransactionsTransactionTransactionTypeChoices {
 export type UpdateClientInput = {
   addressLine1?: InputMaybe<Scalars["String"]["input"]>;
   addressLine2?: InputMaybe<Scalars["String"]["input"]>;
+  addressReference?: InputMaybe<Scalars["String"]["input"]>;
   alias?: InputMaybe<Scalars["String"]["input"]>;
+  city?: InputMaybe<Scalars["String"]["input"]>;
   clientMutationId?: InputMaybe<Scalars["String"]["input"]>;
-  email: Scalars["String"]["input"];
   fullName?: InputMaybe<Scalars["String"]["input"]>;
   id: Scalars["String"]["input"];
+  latitude?: InputMaybe<Scalars["Float"]["input"]>;
+  longitude?: InputMaybe<Scalars["Float"]["input"]>;
   neighborhood?: InputMaybe<Scalars["String"]["input"]>;
   phoneNumber1?: InputMaybe<Scalars["String"]["input"]>;
   phoneNumber2?: InputMaybe<Scalars["String"]["input"]>;
@@ -1071,6 +1064,38 @@ export type UpdateClientPayload = {
   __typename?: "UpdateClientPayload";
   clientMutationId?: Maybe<Scalars["String"]["output"]>;
   user?: Maybe<UserNode>;
+};
+
+export type UpdateCollectorInput = {
+  clientMutationId?: InputMaybe<Scalars["String"]["input"]>;
+  email: Scalars["String"]["input"];
+  fullName: Scalars["String"]["input"];
+  isActive: Scalars["Boolean"]["input"];
+  phoneNumber1: Scalars["String"]["input"];
+  phoneNumber2?: InputMaybe<Scalars["String"]["input"]>;
+  userId: Scalars["String"]["input"];
+};
+
+export type UpdateCollectorPayload = {
+  __typename?: "UpdateCollectorPayload";
+  clientMutationId?: Maybe<Scalars["String"]["output"]>;
+  user?: Maybe<UserNode>;
+};
+
+export type UpdateManagerInput = {
+  clientMutationId?: InputMaybe<Scalars["String"]["input"]>;
+  email?: InputMaybe<Scalars["String"]["input"]>;
+  fullName?: InputMaybe<Scalars["String"]["input"]>;
+  isActive?: InputMaybe<Scalars["Boolean"]["input"]>;
+  phoneNumber1?: InputMaybe<Scalars["String"]["input"]>;
+  phoneNumber2?: InputMaybe<Scalars["String"]["input"]>;
+  userId: Scalars["String"]["input"];
+};
+
+export type UpdateManagerPayload = {
+  __typename?: "UpdateManagerPayload";
+  clientMutationId?: Maybe<Scalars["String"]["output"]>;
+  manager?: Maybe<ManagerNode>;
 };
 
 export type UserNode = Node & {
@@ -1194,6 +1219,41 @@ export type MeQuery = {
     email: string;
     fullName: string;
     isActive: boolean;
+    collectorProfile?: {
+      __typename?: "CollectorNode";
+      id: string;
+      route?: {
+        __typename?: "RouteNode";
+        id: string;
+        name: string;
+        startingBalance?: any | null;
+        currentBalance?: any | null;
+        createdAt: any;
+        updatedAt: any;
+        loansCount?: number | null;
+        pendingLoansCount?: number | null;
+        city: {
+          __typename?: "CityNode";
+          id: string;
+          name: string;
+          region?: {
+            __typename?: "RegionNode";
+            id: string;
+            name: string;
+          } | null;
+        };
+        manager?: {
+          __typename?: "ManagerNode";
+          id: string;
+          user: {
+            __typename?: "UserNode";
+            id: string;
+            fullName: string;
+            phoneNumber1: string;
+          };
+        } | null;
+      } | null;
+    } | null;
   } | null;
 };
 
@@ -1208,11 +1268,23 @@ export type CreateClientMutation = {
     user?: {
       __typename?: "UserNode";
       id: string;
-      email: string;
       fullName: string;
       phoneNumber1: string;
       phoneNumber2?: string | null;
       isActive: boolean;
+      clientProfile?: {
+        __typename?: "ClientNode";
+        id: string;
+        alias?: string | null;
+        identityDocument: string;
+        addressLine1: string;
+        addressLine2?: string | null;
+        neighborhood: string;
+        city?: string | null;
+        addressReference?: string | null;
+        latitude?: any | null;
+        longitude?: any | null;
+      } | null;
     } | null;
   } | null;
 };
@@ -1234,6 +1306,47 @@ export type UpdateClientMutation = {
       phoneNumber2?: string | null;
       isActive: boolean;
     } | null;
+  } | null;
+};
+
+export type ClientsByCollectorQueryVariables = Exact<{
+  first?: InputMaybe<Scalars["Int"]["input"]>;
+  after?: InputMaybe<Scalars["String"]["input"]>;
+}>;
+
+export type ClientsByCollectorQuery = {
+  __typename?: "Query";
+  clientsByCollector?: {
+    __typename?: "ClientNodeConnection";
+    edges: Array<{
+      __typename?: "ClientNodeEdge";
+      node?: {
+        __typename?: "ClientNode";
+        id: string;
+        alias?: string | null;
+        identityDocument: string;
+        addressLine1: string;
+        addressLine2?: string | null;
+        neighborhood: string;
+        city?: string | null;
+        addressReference?: string | null;
+        latitude?: any | null;
+        longitude?: any | null;
+        route?: { __typename?: "RouteNode"; id: string; name: string } | null;
+        user: {
+          __typename?: "UserNode";
+          id: string;
+          fullName: string;
+          phoneNumber1: string;
+          phoneNumber2?: string | null;
+        };
+      } | null;
+    } | null>;
+    pageInfo: {
+      __typename?: "PageInfo";
+      hasNextPage: boolean;
+      endCursor?: string | null;
+    };
   } | null;
 };
 
@@ -1472,11 +1585,7 @@ export type LoansByRouteQuery = {
           neighborhood: string;
           isActive: boolean;
           user: { __typename?: "UserNode"; id: string; fullName: string };
-          collector: {
-            __typename?: "CollectorNode";
-            id: string;
-            user: { __typename?: "UserNode"; id: string; fullName: string };
-          };
+          route?: { __typename?: "RouteNode"; id: string; name: string } | null;
         };
         route: { __typename?: "RouteNode"; id: string; name: string };
       } | null;
@@ -1645,7 +1754,7 @@ export type RouteByIdQuery = {
         } | null;
       } | null>;
     };
-    collector?: {
+    collectorProfile?: {
       __typename?: "CollectorNode";
       id: string;
       user: {
@@ -1680,7 +1789,7 @@ export type RouteDetailQuery = {
       name: string;
       region?: { __typename?: "RegionNode"; id: string; name: string } | null;
     };
-    collector?: {
+    collectorProfile?: {
       __typename?: "CollectorNode";
       id: string;
       user: {
@@ -1720,59 +1829,6 @@ export type RouteDetailQuery = {
       createdAt: any;
       maker?: { __typename?: "UserNode"; id: string; fullName: string } | null;
     } | null> | null;
-  } | null;
-};
-
-export type RoutesByCollectorQueryVariables = Exact<{
-  first?: InputMaybe<Scalars["Int"]["input"]>;
-  after?: InputMaybe<Scalars["String"]["input"]>;
-}>;
-
-export type RoutesByCollectorQuery = {
-  __typename?: "Query";
-  routesByCollector?: {
-    __typename?: "RouteNodeConnection";
-    edges: Array<{
-      __typename?: "RouteNodeEdge";
-      node?: {
-        __typename?: "RouteNode";
-        id: string;
-        name: string;
-        startingBalance?: any | null;
-        currentBalance?: any | null;
-        createdAt: any;
-        updatedAt: any;
-        loansCount?: number | null;
-        pendingLoansCount?: number | null;
-        city: {
-          __typename?: "CityNode";
-          id: string;
-          name: string;
-          region?: {
-            __typename?: "RegionNode";
-            id: string;
-            name: string;
-          } | null;
-        };
-        manager?: {
-          __typename?: "ManagerNode";
-          id: string;
-          user: {
-            __typename?: "UserNode";
-            id: string;
-            fullName: string;
-            phoneNumber1: string;
-          };
-        } | null;
-      } | null;
-    } | null>;
-    pageInfo: {
-      __typename?: "PageInfo";
-      startCursor?: string | null;
-      endCursor?: string | null;
-      hasNextPage: boolean;
-      hasPreviousPage: boolean;
-    };
   } | null;
 };
 
@@ -1949,6 +2005,134 @@ export const MeDocument = {
                 { kind: "Field", name: { kind: "Name", value: "email" } },
                 { kind: "Field", name: { kind: "Name", value: "fullName" } },
                 { kind: "Field", name: { kind: "Name", value: "isActive" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "collectorProfile" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "route" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "name" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "startingBalance" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "currentBalance" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "createdAt" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "updatedAt" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "city" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "name" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "region" },
+                                    selectionSet: {
+                                      kind: "SelectionSet",
+                                      selections: [
+                                        {
+                                          kind: "Field",
+                                          name: { kind: "Name", value: "id" },
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: { kind: "Name", value: "name" },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "manager" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "user" },
+                                    selectionSet: {
+                                      kind: "SelectionSet",
+                                      selections: [
+                                        {
+                                          kind: "Field",
+                                          name: { kind: "Name", value: "id" },
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "fullName",
+                                          },
+                                        },
+                                        {
+                                          kind: "Field",
+                                          name: {
+                                            kind: "Name",
+                                            value: "phoneNumber1",
+                                          },
+                                        },
+                                      ],
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "loansCount" },
+                            },
+                            {
+                              kind: "Field",
+                              name: {
+                                kind: "Name",
+                                value: "pendingLoansCount",
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
               ],
             },
           },
@@ -2006,7 +2190,6 @@ export const CreateClientDocument = {
                     kind: "SelectionSet",
                     selections: [
                       { kind: "Field", name: { kind: "Name", value: "id" } },
-                      { kind: "Field", name: { kind: "Name", value: "email" } },
                       {
                         kind: "Field",
                         name: { kind: "Name", value: "fullName" },
@@ -2022,6 +2205,55 @@ export const CreateClientDocument = {
                       {
                         kind: "Field",
                         name: { kind: "Name", value: "isActive" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "clientProfile" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "alias" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "identityDocument" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "addressLine1" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "addressLine2" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "neighborhood" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "city" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "addressReference" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "latitude" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "longitude" },
+                            },
+                          ],
+                        },
                       },
                     ],
                   },
@@ -2116,6 +2348,192 @@ export const UpdateClientDocument = {
 } as unknown as DocumentNode<
   UpdateClientMutation,
   UpdateClientMutationVariables
+>;
+export const ClientsByCollectorDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "ClientsByCollector" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "first" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "after" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "clientsByCollector" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "first" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "first" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "after" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "after" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "edges" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "node" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "id" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "alias" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "identityDocument" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "addressLine1" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "addressLine2" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "neighborhood" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "city" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "addressReference" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "latitude" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "longitude" },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "route" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "name" },
+                                  },
+                                ],
+                              },
+                            },
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "user" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "fullName" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: {
+                                      kind: "Name",
+                                      value: "phoneNumber1",
+                                    },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: {
+                                      kind: "Name",
+                                      value: "phoneNumber2",
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "pageInfo" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "hasNextPage" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "endCursor" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ClientsByCollectorQuery,
+  ClientsByCollectorQueryVariables
 >;
 export const CreatePaymentDocument = {
   kind: "Document",
@@ -3140,7 +3558,7 @@ export const LoansByRouteDocument = {
                                   },
                                   {
                                     kind: "Field",
-                                    name: { kind: "Name", value: "collector" },
+                                    name: { kind: "Name", value: "route" },
                                     selectionSet: {
                                       kind: "SelectionSet",
                                       selections: [
@@ -3150,26 +3568,7 @@ export const LoansByRouteDocument = {
                                         },
                                         {
                                           kind: "Field",
-                                          name: { kind: "Name", value: "user" },
-                                          selectionSet: {
-                                            kind: "SelectionSet",
-                                            selections: [
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "id",
-                                                },
-                                              },
-                                              {
-                                                kind: "Field",
-                                                name: {
-                                                  kind: "Name",
-                                                  value: "fullName",
-                                                },
-                                              },
-                                            ],
-                                          },
+                                          name: { kind: "Name", value: "name" },
                                         },
                                       ],
                                     },
@@ -3904,7 +4303,7 @@ export const RouteByIdDocument = {
                 },
                 {
                   kind: "Field",
-                  name: { kind: "Name", value: "collector" },
+                  name: { kind: "Name", value: "collectorProfile" },
                   selectionSet: {
                     kind: "SelectionSet",
                     selections: [
@@ -4024,7 +4423,7 @@ export const RouteDetailDocument = {
                 },
                 {
                   kind: "Field",
-                  name: { kind: "Name", value: "collector" },
+                  name: { kind: "Name", value: "collectorProfile" },
                   selectionSet: {
                     kind: "SelectionSet",
                     selections: [
@@ -4191,221 +4590,6 @@ export const RouteDetailDocument = {
     },
   ],
 } as unknown as DocumentNode<RouteDetailQuery, RouteDetailQueryVariables>;
-export const RoutesByCollectorDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "RoutesByCollector" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "first" },
-          },
-          type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "after" },
-          },
-          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "routesByCollector" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "first" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "first" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "after" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "after" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "edges" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "node" },
-                        selectionSet: {
-                          kind: "SelectionSet",
-                          selections: [
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "id" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "name" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "startingBalance" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "currentBalance" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "createdAt" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "updatedAt" },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "city" },
-                              selectionSet: {
-                                kind: "SelectionSet",
-                                selections: [
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "id" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "name" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "region" },
-                                    selectionSet: {
-                                      kind: "SelectionSet",
-                                      selections: [
-                                        {
-                                          kind: "Field",
-                                          name: { kind: "Name", value: "id" },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: { kind: "Name", value: "name" },
-                                        },
-                                      ],
-                                    },
-                                  },
-                                ],
-                              },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "manager" },
-                              selectionSet: {
-                                kind: "SelectionSet",
-                                selections: [
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "id" },
-                                  },
-                                  {
-                                    kind: "Field",
-                                    name: { kind: "Name", value: "user" },
-                                    selectionSet: {
-                                      kind: "SelectionSet",
-                                      selections: [
-                                        {
-                                          kind: "Field",
-                                          name: { kind: "Name", value: "id" },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "fullName",
-                                          },
-                                        },
-                                        {
-                                          kind: "Field",
-                                          name: {
-                                            kind: "Name",
-                                            value: "phoneNumber1",
-                                          },
-                                        },
-                                      ],
-                                    },
-                                  },
-                                ],
-                              },
-                            },
-                            {
-                              kind: "Field",
-                              name: { kind: "Name", value: "loansCount" },
-                            },
-                            {
-                              kind: "Field",
-                              name: {
-                                kind: "Name",
-                                value: "pendingLoansCount",
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "pageInfo" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "startCursor" },
-                      },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "endCursor" },
-                      },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "hasNextPage" },
-                      },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "hasPreviousPage" },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  RoutesByCollectorQuery,
-  RoutesByCollectorQueryVariables
->;
 export const AllTransactionsDocument = {
   kind: "Document",
   definitions: [

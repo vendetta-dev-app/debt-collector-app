@@ -1,5 +1,6 @@
-import type { ComponentType, FC, InputHTMLAttributes, ReactNode, WheelEvent } from 'react'
 import type { FieldProps } from 'formik'
+import type { IconType } from 'react-icons'
+import type { ComponentType, FC, InputHTMLAttributes, ReactNode, WheelEvent } from 'react'
 import { ErrorMessage, Field } from 'formik'
 import { Label, TextInput } from 'flowbite-react'
 import FormError from "@/components/forms/FormError";
@@ -13,6 +14,7 @@ interface Props extends Omit<InputHTMLAttributes<HTMLInputElement>, 'defaultValu
   defaultValue?: string | number | readonly string[] | undefined | object
   disabled?: boolean
   handleChange?: (uid: string) => void
+  icon?: IconType
   label: string
   name: string
   pattern?: string

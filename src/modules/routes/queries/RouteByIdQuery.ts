@@ -22,7 +22,7 @@ const RouteByIdQuery = graphql(`
           }
         }
       }
-      collector {
+      collectorProfile {
         id
         user {
           id

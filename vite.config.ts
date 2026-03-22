@@ -22,8 +22,13 @@ export default defineConfig({
       '@types': '/src/gql/graphql',
       // Modules
       '@auth': '/src/modules/auth',
+      '@clients': '/src/modules/clients',
+      '@collectors': '/src/modules/collectors',
+      '@loans': '/src/modules/loans',
+      '@routes': '/src/modules/routes',
+      '@transactions': '/src/modules/transactions',
       // Snippets
-      '@snippets': 'src/snippets/index',
+      '@snippets': '/src/snippets',
     },
   },
 })

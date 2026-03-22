@@ -2,8 +2,8 @@ import type { ISidebarItem } from '@/layouts/dashboard/sidebar/SidebarLink'
 import SidebarLink from '@/layouts/dashboard/sidebar/SidebarLink'
 import NiceModal, { useModal } from '@ebay/nice-modal-react'
 import { Drawer, DrawerHeader, DrawerItems, Sidebar, SidebarItemGroup, SidebarItems } from 'flowbite-react'
-import { HiMenuAlt1 } from 'react-icons/hi'
-import { TbCoins, TbHome, TbMoneybag, TbRoute } from 'react-icons/tb'
+import { HiMenuAlt1, HiOutlineUserGroup } from 'react-icons/hi'
+import { TbCoins, TbHome, TbMoneybag } from 'react-icons/tb'
 
 const items: ISidebarItem[] = [
   {
@@ -12,9 +12,9 @@ const items: ISidebarItem[] = [
     href: '/',
   },
   {
-    name: 'Mis Rutas',
-    icon: TbRoute,
-    href: '/routes',
+    name: 'Mis Clientes',
+    icon: HiOutlineUserGroup,
+    href: '/clients',
   },
   {
     name: 'Mis Préstamos',

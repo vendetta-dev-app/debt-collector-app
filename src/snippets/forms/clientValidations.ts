@@ -1,44 +1,3 @@
-export const emailValidation = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
-export const numberValidation = /^[0-9]+$/
-
-export const formatRUT = (rut: string): string => {
-  const clean = rut.replace(/\./g, '').replace(/-/g, '').toUpperCase()
-
-  if (clean.length < 2) return clean
-
-  const body = clean.slice(0, -1)
-  const dv = clean.slice(-1)
-
-  // Agregar puntos de miles
-  let formattedBody = ''
-  let count = 0
-  for (let i = body.length - 1; i >= 0; i--) {
-    if (count > 0 && count % 3 === 0) {
-      formattedBody = '.' + formattedBody
-    }
-    formattedBody = body[i] + formattedBody
-    count++
-  }
-
-  return `${formattedBody}-${dv}`
-}
-
-export const validateChileanPhone = (phone: string): boolean => {
-  if (!phone) return false
-
-  const clean = phone.replace(/[\s\+\-\(\)]/g, '')
-
-  if (clean.startsWith('569')) {
-    return clean.length === 11 && /^\d+$/.test(clean)
-  }
-
-  if (clean.startsWith('9')) {
-    return clean.length === 9 && /^\d+$/.test(clean)
-  }
-
-  return false
-}
-
 /**
  * Validaciones para Chile
  * RUT (Rol Único Tributario) y formato de teléfono
@@ -87,11 +46,61 @@ export const validateRUT = (rut: string): boolean => {
 }
 
 /**
+ * Formatea el RUT para mostrar (XX.XXX.XXX-X)
+ */
+export const formatRUT = (rut: string): string => {
+  const clean = rut.replace(/\./g, '').replace(/-/g, '').toUpperCase()
+
+  if (clean.length < 2) return clean
+
+  const body = clean.slice(0, -1)
+  const dv = clean.slice(-1)
+
+  // Agregar puntos de miles
+  let formattedBody = ''
+  let count = 0
+  for (let i = body.length - 1; i >= 0; i--) {
+    if (count > 0 && count % 3 === 0) {
+      formattedBody = '.' + formattedBody
+    }
+    formattedBody = body[i] + formattedBody
+    count++
+  }
+
+  return `${formattedBody}-${dv}`
+}
+
+/**
  * Limpia el RUT (solo números y K, sin puntos ni guion)
  */
-export let cleanRUT: (rut: string) => string
-cleanRUT = (rut: string): string => {
+export const cleanRUT = (rut: string): string => {
   return rut.replace(/\./g, '').replace(/-/g, '').toUpperCase()
+}
+
+/**
+ * Valida formato de teléfono chileno
+ * Formatos aceptados:
+ * - +56 9 XXXX XXXX
+ * - +569XXXXXXXX
+ * - 9 XXXX XXXX
+ * - 9XXXXXXXX
+ */
+export const validateChileanPhone = (phone: string): boolean => {
+  if (!phone) return false
+
+  // Limpiar espacios y símbolos
+  const clean = phone.replace(/[\s\+\-\(\)]/g, '')
+
+  // Debe empezar con 569 o 9, y tener 9 o 11 dígitos totales
+  if (clean.startsWith('569')) {
+    return clean.length === 11 && /^\d+$/.test(clean)
+  }
+
+  if (clean.startsWith('9')) {
+    return clean.length === 9 && /^\d+$/.test(clean)
+  }
+
+  return false
 }
 
 /**
@@ -121,12 +130,26 @@ export const formatChileanPhone = (phone: string): string => {
   return phone
 }
 
-
+/**
+ * Yup test para RUT chileno
+ */
 export const rutTest = {
   name: 'rut',
   message: 'RUT inválido. Formato: XX.XXX.XXX-X',
   test: (value: string | undefined) => {
     if (!value) return true // Allow empty if not required
     return validateRUT(value)
+  },
+}
+
+/**
+ * Yup test para teléfono chileno
+ */
+export const chileanPhoneTest = {
+  name: 'chilean-phone',
+  message: 'Teléfono inválido. Formato: +56 9 XXXX XXXX o 9 XXXX XXXX',
+  test: (value: string | undefined) => {
+    if (!value) return true // Allow empty if not required
+    return validateChileanPhone(value)
   },
 }

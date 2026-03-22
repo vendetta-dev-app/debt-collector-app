@@ -5,7 +5,7 @@ Este documento describe todas las queries y mutations disponibles para la aplica
 ## 📋 Resumen
 
 - **5 Queries de Préstamos**
-- **3 Queries de Rutas**
+- **2 Queries de Rutas** (la ruta del collector se obtiene vía `me.collectorProfile.route`)
 - **1 Query de Transacciones**
 - **2 Mutations de Pagos**
 - **2 Mutations de Clientes**
@@ -122,31 +122,28 @@ const { data } = useQuery(OverdueLoansQuery, {
 
 ## 🗺️ Queries de Rutas (Routes)
 
-### 1. `RoutesByCollectorQuery`
-**Ubicación**: `src/modules/routes/queries/RoutesByCollectorQuery.ts`
-
-**Propósito**: Obtener todas las rutas asignadas al cobrador.
+### NOTA IMPORTANTE: Ruta del Collector
+La ruta del cobrador se obtiene automáticamente vía `me.collectorProfile.route` en la query `Me` que se ejecuta al iniciar la app. **No hay necesidad de una query `RoutesByCollectorQuery`** porque es una relación 1:1 (un collector tiene una sola ruta o ninguna).
 
 **Uso**:
 ```typescript
-import { RoutesByCollectorQuery } from '@routes/queries'
+import useMe from '@auth/hooks/useMe'
 
-const { data } = useQuery(RoutesByCollectorQuery, {
-  variables: {
-    first: 20
+const HomePage = () => {
+  const me = useMe()
+  const route = me?.collectorProfile?.route || null
+
+  if (!route) {
+    return <NoRouteState />  // "No tienes ruta asignada"
   }
-})
-```
 
-**Incluye**:
-- Balance actual de la ruta
-- Ciudad y región
-- Manager asignado
-- Contador de préstamos y préstamos pendientes
+  return <RouteInfoCard route={route} />
+}
+```
 
 ---
 
-### 2. `RouteDetailQuery`
+### 1. `RouteDetailQuery`
 **Ubicación**: `src/modules/routes/queries/RouteDetailQuery.ts`
 
 **Propósito**: Ver detalles completos de una ruta específica.

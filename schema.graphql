@@ -626,6 +626,7 @@ type Query {
   managersByAdmin(offset: Int, before: String, after: String, first: Int, last: Int): ManagerNodeConnection
   clientsByAdmin(offset: Int, before: String, after: String, first: Int, last: Int): ClientNodeConnection
   clientsByCollector(offset: Int, before: String, after: String, first: Int, last: Int): ClientNodeConnection
+  client(id: ID!): ClientNode
 }
 
 type Refresh {

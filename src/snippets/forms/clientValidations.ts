@@ -131,6 +131,25 @@ export const formatChileanPhone = (phone: string): string => {
 }
 
 /**
+ * Limpia el teléfono chileno (solo 9 dígitos, sin prefijos ni espacios)
+ */
+export const cleanChileanPhone = (phone: string): string => {
+  const clean = phone.replace(/[\s\+\-\(\)]/g, '')
+
+  // Si tiene código de país 56, quitarlo
+  if (clean.startsWith('569')) {
+    return clean.substring(2) // Dejar solo los 9 dígitos
+  }
+
+  // Si ya tiene 9 dígitos y empieza con 9, retornar limpio
+  if (clean.startsWith('9') && clean.length === 9) {
+    return clean
+  }
+
+  return clean // Retornar lo que quedó (asumiendo que está bien)
+}
+
+/**
  * Yup test para RUT chileno
  */
 export const rutTest = {

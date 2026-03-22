@@ -10,7 +10,7 @@ import { useToast } from '@hooks'
 import { FormGrid } from '@/components'
 import FormField from '@/components/forms/FormField'
 import CreateClientMutation from '@clients/mutations/CreateClientMutation'
-import { formatChileanPhone, formatRUT, validateChileanPhone, validateRUT } from '@snippets/forms/validations'
+import { formatChileanPhone, formatRUT, validateChileanPhone, validateRUT, cleanChileanPhone, cleanRUT } from '@snippets/forms/clientValidations'
 
 interface Values {
   full_name: string
@@ -97,17 +97,14 @@ const CreateClientForm: FC<CreateClientFormProps> = ({ onSuccess, onCancel }) =>
   }
 
   const onSubmit = async (values: Values) => {
-    // Limpiar RUT (quitar puntos y guion)
-    const cleanRut = values.identity_document.replace(/\./g, '').replace(/-/g, '')
-
     await createClient({
       variables: {
         input: {
           fullName: values.full_name,
-          identityDocument: cleanRut,
+          identityDocument: cleanRUT(values.identity_document),
           alias: values.alias || null,
-          phoneNumber1: "923213111",
-          phoneNumber2: values.phone_number_2 || null,
+          phoneNumber1: cleanChileanPhone(values.phone_number_1),
+          phoneNumber2: values.phone_number_2 ? cleanChileanPhone(values.phone_number_2) : null,
           addressLine1: values.address_line_1,
           addressLine2: values.address_line_2 || null,
           neighborhood: values.neighborhood,

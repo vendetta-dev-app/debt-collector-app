@@ -8,6 +8,7 @@ import LoansPage from '@/pages/loans'
 import LoanDetailPage from '@/pages/loans/route'
 import ClientsPage from '@/pages/clients'
 import CreateClientPage from '@/pages/clients/new'
+import ClientDetailPage from '@/pages/clients/detail'
 import ProtectedRoutes from '@/router/ProtectedRoutes'
 import AuthProvider from '@auth/contexts/AuthProvider'
 import MeProvider from '@auth/contexts/MeProvider'
@@ -60,14 +61,18 @@ const router = createBrowserRouter([
         element: <Outlet/>,
         children: [
           {
-            path: '/clients',
+            path: '',
             element: <ClientsPage/>,
           },
           {
-            path: '/clients/new',
-            element: <CreateClientPage/>,
+            path: ':clientId',
+            element: <ClientDetailPage/>,
           },
         ],
+      },
+      {
+        path: 'clients/new',
+        element: <CreateClientPage/>,
       },
     ],
   },

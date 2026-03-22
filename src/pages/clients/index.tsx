@@ -10,10 +10,11 @@ import {
   HiOutlineSearch,
   HiOutlineUserGroup,
   HiUserAdd,
+  HiOutlineMapPin,
 } from 'react-icons/hi'
 import { Text } from '@components'
 import useMe from '@auth/hooks/useMe'
-import { formatRUT } from '@snippets/forms/validations'
+import { formatRUT } from '@snippets/forms/clientValidations'
 import ClientsByCollectorQuery from '@clients/queries/ClientsByCollectorQuery'
 
 // NoRouteState Component
@@ -43,77 +44,61 @@ const NoRouteState = () => (
 )
 
 const ClientCard = ({ client }: { client: any }) => {
-  const googleMapsUrl = client.latitude && client.longitude
-      ? `https://www.google.com/maps/search/?api=1&query=${client.latitude},${client.longitude}`
-      : null
+  // Get initials for avatar
+  const initials = client.user?.fullName
+    ?.split(' ')
+    .map((n: string) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
 
   return (
       <Link
           to={`/clients/${client.id}`}
-          className="block bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-gray-700"
+          className="block bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow transition-all border border-gray-200 dark:border-gray-700 active:scale-[0.99]"
       >
-        <div className="p-4">
-          {/* Header: Nombre y Alias */}
-          <div className="flex items-start justify-between mb-3">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <Text size="base" weight="semibold" className="truncate">
-                  {client.user?.fullName}
-                </Text>
-                {client.alias && (
-                    <Badge color="gray" size="xs">{client.alias}</Badge>
-                )}
-              </div>
-              <Text size="sm" color="gray" className="font-mono mt-1">
-                {formatRUT(client.identityDocument)}
+        <div className="p-3">
+          <div className="flex items-center gap-3">
+            {/* Avatar with initials */}
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/30 dark:to-primary-900/20 flex items-center justify-center flex-shrink-0">
+              <Text size="sm" weight="bold" color="primary">
+                {initials}
               </Text>
             </div>
-            <HiChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0"/>
-          </div>
 
-          {/* Phone */}
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-2">
-            <HiOutlinePhone className="w-4 h-4 flex-shrink-0"/>
-            <a
-                href={`tel:${client.user?.phoneNumber1}`}
-                className="hover:text-primary-600 dark:hover:text-primary-400"
-                onClick={(e) => e.stopPropagation()}
-            >
-              {client.user?.phoneNumber1}
-            </a>
-          </div>
-
-          {/* Address */}
-          <div className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400 mb-2">
-            <FaHome className="w-4 h-4 flex-shrink-0 mt-0.5"/>
+            {/* Content */}
             <div className="flex-1 min-w-0">
-              <p className="line-clamp-2">{client.addressLine1}</p>
-              {client.addressLine2 && <p className="line-clamp-1 text-xs">{client.addressLine2}</p>}
-              <p className="text-xs">
-                {client.neighborhood}{client.city && `, ${client.city}`}
-              </p>
+              {/* Name row */}
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center gap-2 min-w-0">
+                  <Text size="base" weight="semibold" className="truncate">
+                    {client.user?.fullName}
+                  </Text>
+                  {client.alias && (
+                      <Badge color="gray" size="xs">{client.alias}</Badge>
+                  )}
+                </div>
+                <HiChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0"/>
+              </div>
+
+              {/* Details row */}
+              <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                <a
+                    href={`tel:${client.user?.phoneNumber1}`}
+                    className="flex items-center gap-1 hover:text-primary-600 dark:hover:text-primary-400"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                  <HiOutlinePhone className="w-3 h-3"/>
+                  {client.user?.phoneNumber1}
+                </a>
+                <span>•</span>
+                <span className="flex items-center gap-1 truncate">
+                  <FaHome className="w-3 h-3 flex-shrink-0"/>
+                  {client.neighborhood}
+                </span>
+              </div>
             </div>
           </div>
-
-          {/* Reference (if exists) */}
-          {client.addressReference && (
-              <p className="text-xs text-gray-500 dark:text-gray-500 line-clamp-1 italic">
-                "{client.addressReference}"
-              </p>
-          )}
-
-          {/* Maps link (if coordinates) */}
-          {googleMapsUrl && (
-              <a
-                  href={googleMapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-primary-600 dark:text-primary-400 mt-2 hover:underline"
-                  onClick={(e) => e.stopPropagation()}
-              >
-                Ver en mapa
-              </a>
-          )}
         </div>
       </Link>
   )

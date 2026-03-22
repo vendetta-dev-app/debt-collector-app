@@ -10,11 +10,9 @@ import {
   HiOutlineSearch,
   HiOutlineUserGroup,
   HiUserAdd,
-  HiOutlineMapPin,
 } from 'react-icons/hi'
 import { Text } from '@components'
 import useMe from '@auth/hooks/useMe'
-import { formatRUT } from '@snippets/forms/clientValidations'
 import ClientsByCollectorQuery from '@clients/queries/ClientsByCollectorQuery'
 
 // NoRouteState Component
@@ -46,11 +44,11 @@ const NoRouteState = () => (
 const ClientCard = ({ client }: { client: any }) => {
   // Get initials for avatar
   const initials = client.user?.fullName
-    ?.split(' ')
-    .map((n: string) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
+      ?.split(' ')
+      .map((n: string) => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
 
   return (
       <Link
@@ -60,7 +58,8 @@ const ClientCard = ({ client }: { client: any }) => {
         <div className="p-3">
           <div className="flex items-center gap-3">
             {/* Avatar with initials */}
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/30 dark:to-primary-900/20 flex items-center justify-center flex-shrink-0">
+            <div
+                className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/30 dark:to-primary-900/20 flex items-center justify-center flex-shrink-0">
               <Text size="sm" weight="bold" color="primary">
                 {initials}
               </Text>

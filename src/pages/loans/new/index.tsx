@@ -22,12 +22,6 @@ const CreateLoanPage = () => {
         </div>
       </div>
 
-      <div className="mb-6">
-        <Text size="base" color="gray">
-          Completa los datos del préstamo. El préstamo quedará en estado <span className="text-amber-600 font-medium">PENDIENTE</span> hasta que sea aprobado por el administrador.
-        </Text>
-      </div>
-
       <CreateLoanForm/>
     </div>
   )

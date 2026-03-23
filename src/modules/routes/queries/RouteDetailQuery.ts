@@ -45,7 +45,7 @@ const RouteDetailQuery = graphql(`
         }
       }
       loansCount
-      pendingLoansCount
+      overdueLoansCount
       transactions {
         id
         amount

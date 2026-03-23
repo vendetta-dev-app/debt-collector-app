@@ -132,21 +132,6 @@ export type AdminNodeEdge = {
   node?: Maybe<AdminNode>;
 };
 
-export type ApproveLoanInput = {
-  clientMutationId?: InputMaybe<Scalars["String"]["input"]>;
-  loanId: Scalars["String"]["input"];
-};
-
-/**
- * Approves a pending loan and creates disbursement transactions.
- * Only admins can approve loans.
- */
-export type ApproveLoanPayload = {
-  __typename?: "ApproveLoanPayload";
-  clientMutationId?: Maybe<Scalars["String"]["output"]>;
-  loan?: Maybe<LoanNode>;
-};
-
 export type CityNode = Node & {
   __typename?: "CityNode";
   alternateNames?: Maybe<Scalars["String"]["output"]>;
@@ -387,10 +372,7 @@ export type CreateLoanInput = {
   routeId: Scalars["String"]["input"];
 };
 
-/**
- * Creates a new loan request in PENDING status.
- * The loan must be approved by an admin before disbursement.
- */
+/** Creates a new loan and disburses it immediately. No approval required. */
 export type CreateLoanPayload = {
   __typename?: "CreateLoanPayload";
   clientMutationId?: Maybe<Scalars["String"]["output"]>;
@@ -566,29 +548,16 @@ export type ManagerNodeEdge = {
 export type Mutation = {
   __typename?: "Mutation";
   addAdminToRoute?: Maybe<AddAdminToRoutePayload>;
-  /**
-   * Approves a pending loan and creates disbursement transactions.
-   * Only admins can approve loans.
-   */
-  approveLoan?: Maybe<ApproveLoanPayload>;
   createAdmin?: Maybe<CreateAdminPayload>;
   createClient?: Maybe<CreateClientPayload>;
   createCollector?: Maybe<CreateCollectorPayload>;
-  /**
-   * Creates a new loan request in PENDING status.
-   * The loan must be approved by an admin before disbursement.
-   */
+  /** Creates a new loan and disburses it immediately. No approval required. */
   createLoan?: Maybe<CreateLoanPayload>;
   createManager?: Maybe<CreateManagerPayload>;
   createPayment?: Maybe<CreatePaymentPayload>;
   createRoute?: Maybe<CreateRoutePayload>;
   editRoute?: Maybe<EditRoutePayload>;
   refreshToken?: Maybe<Refresh>;
-  /**
-   * Rejects a pending loan request.
-   * Only admins can reject loans.
-   */
-  rejectLoan?: Maybe<RejectLoanPayload>;
   tokenAuth?: Maybe<ObtainJsonWebTokenPayload>;
   updateClient?: Maybe<UpdateClientPayload>;
   updateCollector?: Maybe<UpdateCollectorPayload>;
@@ -603,10 +572,6 @@ export type Mutation = {
 
 export type MutationAddAdminToRouteArgs = {
   input: AddAdminToRouteInput;
-};
-
-export type MutationApproveLoanArgs = {
-  input: ApproveLoanInput;
 };
 
 export type MutationCreateAdminArgs = {
@@ -643,10 +608,6 @@ export type MutationEditRouteArgs = {
 
 export type MutationRefreshTokenArgs = {
   token?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type MutationRejectLoanArgs = {
-  input: RejectLoanInput;
 };
 
 export type MutationTokenAuthArgs = {
@@ -760,8 +721,6 @@ export type Query = {
   overdueLoans?: Maybe<LoanNodeConnection>;
   payment?: Maybe<PaymentNode>;
   paymentsByLoan?: Maybe<PaymentNodeConnection>;
-  /** Loans pending approval */
-  pendingLoans?: Maybe<LoanNodeConnection>;
   region?: Maybe<RegionNode>;
   regions?: Maybe<RegionNodeConnection>;
   route?: Maybe<RouteNode>;
@@ -870,14 +829,6 @@ export type QueryPaymentsByLoanArgs = {
   offset?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
-export type QueryPendingLoansArgs = {
-  after?: InputMaybe<Scalars["String"]["input"]>;
-  before?: InputMaybe<Scalars["String"]["input"]>;
-  first?: InputMaybe<Scalars["Int"]["input"]>;
-  last?: InputMaybe<Scalars["Int"]["input"]>;
-  offset?: InputMaybe<Scalars["Int"]["input"]>;
-};
-
 export type QueryRegionsArgs = {
   after?: InputMaybe<Scalars["String"]["input"]>;
   before?: InputMaybe<Scalars["String"]["input"]>;
@@ -963,23 +914,6 @@ export type RegionNodeEdge = {
   node?: Maybe<RegionNode>;
 };
 
-export type RejectLoanInput = {
-  clientMutationId?: InputMaybe<Scalars["String"]["input"]>;
-  loanId: Scalars["String"]["input"];
-  /** Reason for rejection */
-  reason: Scalars["String"]["input"];
-};
-
-/**
- * Rejects a pending loan request.
- * Only admins can reject loans.
- */
-export type RejectLoanPayload = {
-  __typename?: "RejectLoanPayload";
-  clientMutationId?: Maybe<Scalars["String"]["output"]>;
-  loan?: Maybe<LoanNode>;
-};
-
 export type RouteNode = Node & {
   __typename?: "RouteNode";
   administrators: AdminNodeConnection;
@@ -994,7 +928,7 @@ export type RouteNode = Node & {
   loansCount?: Maybe<Scalars["Int"]["output"]>;
   manager?: Maybe<ManagerNode>;
   name: Scalars["String"]["output"];
-  pendingLoansCount?: Maybe<Scalars["Int"]["output"]>;
+  overdueLoansCount?: Maybe<Scalars["Int"]["output"]>;
   startingBalance?: Maybe<Scalars["Decimal"]["output"]>;
   transactions?: Maybe<Array<Maybe<TransactionNode>>>;
   updatedAt: Scalars["DateTime"]["output"];
@@ -1279,7 +1213,7 @@ export type MeQuery = {
         createdAt: any;
         updatedAt: any;
         loansCount?: number | null;
-        pendingLoansCount?: number | null;
+        overdueLoansCount?: number | null;
         city: {
           __typename?: "CityNode";
           id: string;
@@ -1886,7 +1820,7 @@ export type RouteDetailQuery = {
     createdAt: any;
     updatedAt: any;
     loansCount?: number | null;
-    pendingLoansCount?: number | null;
+    overdueLoansCount?: number | null;
     city: {
       __typename?: "CityNode";
       id: string;
@@ -2245,7 +2179,7 @@ export const MeDocument = {
                               kind: "Field",
                               name: {
                                 kind: "Name",
-                                value: "pendingLoansCount",
+                                value: "overdueLoansCount",
                               },
                             },
                           ],
@@ -4888,7 +4822,7 @@ export const RouteDetailDocument = {
                 { kind: "Field", name: { kind: "Name", value: "loansCount" } },
                 {
                   kind: "Field",
-                  name: { kind: "Name", value: "pendingLoansCount" },
+                  name: { kind: "Name", value: "overdueLoansCount" },
                 },
                 {
                   kind: "Field",

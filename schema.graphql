@@ -59,20 +59,6 @@ type AdminNodeEdge {
   cursor: String!
 }
 
-input ApproveLoanInput {
-  loanId: String!
-  clientMutationId: String
-}
-
-"""
-Approves a pending loan and creates disbursement transactions.
-Only admins can approve loans.
-"""
-type ApproveLoanPayload {
-  loan: LoanNode
-  clientMutationId: String
-}
-
 """
 The `BigInt` scalar type represents non-fractional whole numeric values.
 `BigInt` is not constrained to 32-bit like the `Int` type and thus is a less
@@ -296,10 +282,7 @@ input CreateLoanInput {
   clientMutationId: String
 }
 
-"""
-Creates a new loan request in PENDING status.
-The loan must be approved by an admin before disbursement.
-"""
+"""Creates a new loan and disburses it immediately. No approval required."""
 type CreateLoanPayload {
   loan: LoanNode
   clientMutationId: String
@@ -487,23 +470,8 @@ type ManagerNodeEdge {
 }
 
 type Mutation {
-  """
-  Creates a new loan request in PENDING status.
-  The loan must be approved by an admin before disbursement.
-  """
+  """Creates a new loan and disburses it immediately. No approval required."""
   createLoan(input: CreateLoanInput!): CreateLoanPayload
-
-  """
-  Approves a pending loan and creates disbursement transactions.
-  Only admins can approve loans.
-  """
-  approveLoan(input: ApproveLoanInput!): ApproveLoanPayload
-
-  """
-  Rejects a pending loan request.
-  Only admins can reject loans.
-  """
-  rejectLoan(input: RejectLoanInput!): RejectLoanPayload
   createPayment(input: CreatePaymentInput!): CreatePaymentPayload
 
   """
@@ -634,9 +602,6 @@ type Query {
     last: Int
   ): LoanNodeConnection
 
-  """Loans pending approval"""
-  pendingLoans(offset: Int, before: String, after: String, first: Int, last: Int): LoanNodeConnection
-
   """Loans past their due date"""
   overdueLoans(offset: Int, before: String, after: String, first: Int, last: Int): LoanNodeConnection
   paymentsByLoan(
@@ -700,23 +665,6 @@ type RegionNodeEdge {
   cursor: String!
 }
 
-input RejectLoanInput {
-  loanId: String!
-
-  """Reason for rejection"""
-  reason: String!
-  clientMutationId: String
-}
-
-"""
-Rejects a pending loan request.
-Only admins can reject loans.
-"""
-type RejectLoanPayload {
-  loan: LoanNode
-  clientMutationId: String
-}
-
 type RouteNode implements Node {
   """The ID of the object"""
   id: ID!
@@ -733,7 +681,7 @@ type RouteNode implements Node {
   currentBalance: Decimal
   transactions: [TransactionNode]
   loansCount: Int
-  pendingLoansCount: Int
+  overdueLoansCount: Int
 }
 
 type RouteNodeConnection {

@@ -1,17 +1,16 @@
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@apollo/client'
-import { Spinner, Badge, Button } from 'flowbite-react'
+import { Badge, Button, Spinner } from 'flowbite-react'
 import {
-  HiOutlineUser,
-  HiOutlineLocationMarker,
-  HiOutlineCollection,
-  HiOutlineCurrencyDollar,
   HiOutlineCalendar,
-  HiOutlineClock,
-  HiOutlineExclamationCircle,
   HiOutlineCheckCircle,
+  HiOutlineCollection,
   HiOutlineCreditCard,
+  HiOutlineCurrencyDollar,
+  HiOutlineExclamationCircle,
+  HiOutlineLocationMarker,
   HiOutlinePlus,
+  HiOutlineUser,
 } from 'react-icons/hi'
 import { PiEmpty } from 'react-icons/pi'
 import { Text } from '@/components'
@@ -71,7 +70,6 @@ const LoanDetailPage = () => {
   }
 
   const payments = paymentsData?.paymentsByLoan?.edges?.map(edge => edge?.node).filter(Boolean) || []
-  const totalPaid = payments.reduce((sum, payment) => sum + (payment?.amount || 0), 0)
 
   const getPaymentMethodLabel = (method: string) => {
     const methods: Record<string, string> = {
@@ -128,7 +126,7 @@ const LoanDetailPage = () => {
       </div>
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
@@ -286,7 +284,6 @@ const LoanDetailPage = () => {
       {!loan.isFullyPaid && (
         <div className="flex justify-end">
           <Button
-            color="blue"
             size="lg"
             onClick={() => NiceModal.show(CreatePaymentModal, {
               loanId: loan?.id,

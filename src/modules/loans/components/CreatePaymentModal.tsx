@@ -44,7 +44,7 @@ const validationSchema = Yup.object({
   notes: Yup.string(),
 })
 
-const CreatePaymentModal = NiceModal.create(({ loanId, clientId, pendingBalance, onPaymentSuccess }: CreatePaymentModalProps) => {
+const CreatePaymentModal = NiceModal.create(({ loanId, pendingBalance, onPaymentSuccess }: CreatePaymentModalProps) => {
   const modal = NiceModal.useModal()
   const [error, setError] = useState<string | null>(null)
 
@@ -109,7 +109,7 @@ const CreatePaymentModal = NiceModal.create(({ loanId, clientId, pendingBalance,
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-            <HiOutlineCurrencyDollar className="text-blue-500" />
+            <HiOutlineCurrencyDollar className="text-primary-500" />
             Registrar Pago
           </h3>
           <button
@@ -123,17 +123,17 @@ const CreatePaymentModal = NiceModal.create(({ loanId, clientId, pendingBalance,
         {/* Body */}
         <div className="p-4">
           {/* Info Card */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-4">
+          <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-lg p-3 mb-4">
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">Balance Pendiente</p>
-                <Text size="lg" weight="bold" color="blue">
+                <p className="text-xs text-primary-600 dark:text-primary-400 font-medium">Balance Pendiente</p>
+                <Text size="lg" weight="bold" color="primary">
                   <CurrencyCell value={maxAmount} />
                 </Text>
               </div>
               <div className="text-right">
-                <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">Loan ID</p>
-                <p className="text-sm text-blue-800 dark:text-blue-200 font-mono">
+                <p className="text-xs text-primary-600 dark:text-primary-400 font-medium">Loan ID</p>
+                <p className="text-sm text-primary-800 dark:text-primary-200 font-mono">
                   {loanId?.slice(0, 8)}...
                 </p>
               </div>
@@ -153,7 +153,7 @@ const CreatePaymentModal = NiceModal.create(({ loanId, clientId, pendingBalance,
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
           >
-            {({ values, errors, touched, handleChange, handleBlur, setFieldValue }) => (
+            {({ values, errors, touched, handleChange, handleBlur }) => (
               <Form>
                 <div className="space-y-4">
                   {/* Amount */}
@@ -175,10 +175,10 @@ const CreatePaymentModal = NiceModal.create(({ loanId, clientId, pendingBalance,
                         onChange={handleChange}
                         onBlur={handleBlur}
                         placeholder="0.00"
-                        className={`block w-full pl-10 pr-12 py-2 border rounded-lg leading-5 bg-white dark:bg-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm dark:text-white ${
+                        className={`block w-full pl-10 pr-12 py-2 border rounded-lg leading-5 bg-white dark:bg-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 sm:text-sm dark:text-white ${
                           errors.amount && touched.amount
                             ? 'border-red-300 dark:border-red-600 focus:border-red-500 focus:ring-red-500'
-                            : 'border-gray-300 dark:border-gray-600 focus:border-blue-500'
+                            : 'border-gray-300 dark:border-gray-600 focus:border-primary-500'
                         }`}
                       />
                       <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
@@ -209,10 +209,10 @@ const CreatePaymentModal = NiceModal.create(({ loanId, clientId, pendingBalance,
                         onChange={handleChange}
                         onBlur={handleBlur}
                         max={new Date().toISOString().split('T')[0]}
-                        className={`block w-full pl-10 pr-3 py-2 border rounded-lg leading-5 bg-white dark:bg-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm dark:text-white ${
+                        className={`block w-full pl-10 pr-3 py-2 border rounded-lg leading-5 bg-white dark:bg-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 sm:text-sm dark:text-white ${
                           errors.paymentDate && touched.paymentDate
                             ? 'border-red-300 dark:border-red-600 focus:border-red-500 focus:ring-red-500'
-                            : 'border-gray-300 dark:border-gray-600 focus:border-blue-500'
+                            : 'border-gray-300 dark:border-gray-600 focus:border-primary-500'
                         }`}
                       />
                     </div>
@@ -235,10 +235,10 @@ const CreatePaymentModal = NiceModal.create(({ loanId, clientId, pendingBalance,
                         value={values.paymentMethod}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        className={`block w-full pl-10 pr-3 py-2 border rounded-lg leading-5 bg-white dark:bg-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm dark:text-white ${
+                        className={`block w-full pl-10 pr-3 py-2 border rounded-lg leading-5 bg-white dark:bg-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 sm:text-sm dark:text-white ${
                           errors.paymentMethod && touched.paymentMethod
                             ? 'border-red-300 dark:border-red-600 focus:border-red-500 focus:ring-red-500'
-                            : 'border-gray-300 dark:border-gray-600 focus:border-blue-500'
+                            : 'border-gray-300 dark:border-gray-600 focus:border-primary-500'
                         }`}
                       >
                         {paymentMethods.map((method) => (
@@ -269,7 +269,7 @@ const CreatePaymentModal = NiceModal.create(({ loanId, clientId, pendingBalance,
                         onBlur={handleBlur}
                         rows={3}
                         placeholder="Notas adicionales sobre el pago..."
-                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg leading-5 bg-white dark:bg-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:text-white resize-none"
+                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg leading-5 bg-white dark:bg-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm dark:text-white resize-none"
                       />
                     </div>
                     {errors.notes && touched.notes && (
@@ -309,7 +309,6 @@ const CreatePaymentModal = NiceModal.create(({ loanId, clientId, pendingBalance,
                   </Button>
                   <Button
                     type="submit"
-                    color="blue"
                     disabled={loading}
                   >
                     {loading ? (

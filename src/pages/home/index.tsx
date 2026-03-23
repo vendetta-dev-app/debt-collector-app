@@ -53,7 +53,7 @@ interface RouteInfoCardProps {
     name?: string | null
     currentBalance?: number | null
     loansCount?: number | null
-    pendingLoansCount?: number | null
+    overdueLoansCount?: number | null
     city?: {
       id?: string
       name?: string | null
@@ -95,10 +95,10 @@ const RouteInfoCard = ({ route }: RouteInfoCardProps) => (
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg p-3">
           <Text color="gray" size="xs">
-            Pendientes
+            Vencidos
           </Text>
           <Text size="lg" weight="semibold">
-            {route?.pendingLoansCount || 0}
+            {route?.overdueLoansCount || 0}
           </Text>
         </div>
       </div>

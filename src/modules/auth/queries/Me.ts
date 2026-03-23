@@ -33,7 +33,7 @@ const Me = graphql(`
             }
           }
           loansCount
-          pendingLoansCount
+          overdueLoansCount
         }
       }
     }

@@ -72,7 +72,7 @@ const CreateLoanForm: FC<CreateLoanFormProps> = ({ onSuccess, onCancel }) => {
   const [createLoan, { loading }] = useMutation(CreateLoanMutation, {
     onCompleted: (data) => {
       if (data.createLoan?.loan) {
-        toast('Préstamo creado exitosamente. Queda pendiente de aprobación.', 'success')
+        toast('Préstamo creado exitosamente.', 'success')
         if (onSuccess) {
           onSuccess()
         } else {
@@ -135,20 +135,6 @@ const CreateLoanForm: FC<CreateLoanFormProps> = ({ onSuccess, onCancel }) => {
 
           return (
               <Form>
-                {/* Pending approval notice */}
-                <div
-                    className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3 mb-4">
-                  <div className="flex items-start gap-2">
-                    <HiOutlineInformationCircle
-                        className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0"/>
-                    <div className="text-sm text-amber-800 dark:text-amber-200">
-                      <p className="font-medium">El préstamo quedará pendiente de aprobación</p>
-                      <p className="text-xs mt-1 opacity-80">Una vez creado, el administrador deberá aprobarlo antes de
-                        que se desembolse.</p>
-                    </div>
-                  </div>
-                </div>
-
                 <FormGrid>
                   {/* Client Selection */}
                   <div className="col-span-full">

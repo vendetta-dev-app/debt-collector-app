@@ -19,6 +19,7 @@ import CurrencyCell from '@/components/tables/CurrencyCell'
 import RouteByIdQuery from '@/modules/routes/queries/RouteByIdQuery'
 import LoansByRouteQuery from '@/modules/loans/queries/LoansByRouteQuery'
 import TransactionsByRouteSection from '@/modules/routes/components/TransactionsByRouteSection'
+import { formatDate } from '@/snippets/dates'
 
 const RoutePage = () => {
   const { routeId = null } = useParams()
@@ -95,7 +96,7 @@ const RoutePage = () => {
               Creada el
             </Text>
             <Text size="sm" weight="semibold">
-              {new Date(route.createdAt).toLocaleDateString()}
+              {formatDate(route.createdAt)}
             </Text>
           </div>
 
@@ -105,7 +106,7 @@ const RoutePage = () => {
               Actualizada el
             </Text>
             <Text size="sm" weight="semibold">
-              {new Date(route.updatedAt).toLocaleDateString()}
+              {formatDate(route.updatedAt)}
             </Text>
           </div>
         </div>

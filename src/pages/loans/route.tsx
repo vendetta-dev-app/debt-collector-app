@@ -20,6 +20,7 @@ import LoanDetailQuery from '@/modules/loans/queries/LoanDetailQuery'
 import PaymentsByLoanQuery from '@/modules/loans/queries/PaymentsByLoanQuery'
 import NiceModal from '@ebay/nice-modal-react'
 import CreatePaymentModal from '@/modules/loans/components/CreatePaymentModal'
+import { formatDate } from '@/snippets/dates'
 
 const LoanDetailPage = () => {
   const { loanId } = useParams()
@@ -103,7 +104,7 @@ const LoanDetailPage = () => {
             Préstamo #{loanId?.slice(0, 8)}
           </Text>
           <Text color="gray" size="sm" className="mt-1">
-            Creado el {new Date(loan.createdAt).toLocaleDateString()}
+            Creado el {formatDate(loan.createdAt)}
           </Text>
         </div>
         <div className="flex gap-2">
@@ -236,7 +237,7 @@ const LoanDetailPage = () => {
             <p className="text-sm text-gray-500 dark:text-gray-400">Fecha de vencimiento</p>
             <Text size="base" weight="semibold" className="flex items-center gap-2">
               <HiOutlineCalendar className="text-gray-400" />
-              {loan.dueDate ? new Date(loan.dueDate).toLocaleDateString() : 'No definida'}
+              {formatDate(loan.dueDate) ?? 'No definida'}
             </Text>
           </div>
 
@@ -257,10 +258,9 @@ const LoanDetailPage = () => {
           <div>
             <p className="text-sm text-gray-500 dark:text-gray-400">Estado</p>
             <div className="flex gap-2 mt-1">
-              {loan.isApproved && <Badge color="success">Aprobado</Badge>}
-              {loan.isRejected && <Badge color="red">Rechazado</Badge>}
               {loan.isFullyPaid && <Badge color="success">Pagado</Badge>}
               {loan.isOverdue && !loan.isFullyPaid && <Badge color="red">Vencido</Badge>}
+              {!loan.isFullyPaid && !loan.isOverdue && <Badge color="success">Activo</Badge>}
             </div>
           </div>
 
@@ -336,7 +336,7 @@ const LoanDetailPage = () => {
                   <tr key={payment?.id} className={payment?.isVoided ? 'bg-red-50 dark:bg-red-900/10' : ''}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Text size="sm" weight="medium">
-                        {payment?.paymentDate ? new Date(payment.paymentDate).toLocaleDateString() : '-'}
+                        {formatDate(payment?.paymentDate)}
                       </Text>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

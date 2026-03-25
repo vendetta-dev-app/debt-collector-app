@@ -3,6 +3,7 @@ import type {ColumnDef} from '@tanstack/react-table'
 import {useMemo} from 'react'
 import QueryTable from "@/components/tables/QueryTable";
 import TransactionsQuery from "@/modules/transactions/queries/TransactionsQuery";
+import { formatDateTime } from '@/snippets/dates'
 
 interface User {
     name: string
@@ -14,8 +15,8 @@ const TransactionsTable = () => {
             {
                 id: 'created',
                 header: 'Fecha',
-                accessorKey: 'node.createdAt',
                 size: 200,
+                cell: info => formatDateTime(info.row.original.node?.createdAt),
             },
             {
                 id: 'description',

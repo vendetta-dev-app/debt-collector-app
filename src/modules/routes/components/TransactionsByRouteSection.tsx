@@ -3,6 +3,7 @@ import {MdOutlineCurrencyExchange} from 'react-icons/md'
 import InfoCard from '@/components/cards/InfoCard'
 import TransactionsQuery from "@/modules/transactions/queries/TransactionsQuery"
 import {Table, TableBody, TableCell, TableHead, TableHeadCell, TableRow} from "flowbite-react";
+import { formatDateTime } from '@/snippets/dates'
 
 interface Props {
   routeId: string
@@ -40,7 +41,7 @@ const TransactionsByRouteSection = ({ routeId }: Props) => {
                       data?.transactions?.edges.map(edge => {
                           return (
                               <TableRow>
-                                  <TableCell>{edge?.node?.createdAt}</TableCell>
+                                  <TableCell>{formatDateTime(edge?.node?.createdAt)}</TableCell>
                                   <TableCell>{edge?.node?.description ?? ""}</TableCell>
                                   <TableCell>{edge?.node?.transactionType ?? ""}</TableCell>
                                   <TableCell>{edge?.node?.amount ?? ""}</TableCell>

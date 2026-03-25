@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Badge } from 'flowbite-react'
+import { formatDate } from '@/snippets/dates'
 import {
   HiOutlineChevronRight,
   HiOutlineClock,
@@ -108,11 +109,7 @@ export const LoanCard = ({ loan, index }: LoanCardProps) => {
               <HiOutlineClock className="w-3.5 h-3.5" />
               <span className="text-gray-500 dark:text-gray-400">Vence: </span>
               <p className={`font-medium ${loan?.isOverdue ? 'text-red-600 dark:text-red-400' : 'text-gray-700 dark:text-gray-300'}`}>
-                {new Date(loan?.dueDate).toLocaleDateString('es-ES', {
-                  day: 'numeric',
-                  month: 'short',
-                  year: 'numeric'
-                })}
+                {formatDate(loan?.dueDate)}
               </p>
             </div>
           )}

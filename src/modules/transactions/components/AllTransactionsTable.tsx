@@ -1,4 +1,5 @@
 import { useQuery } from '@apollo/client'
+import { formatDateTime } from '@/snippets/dates'
 import AllTransactionsQuery from '@/modules/transactions/queries/AllTransactionsQuery'
 import { Badge, Spinner } from 'flowbite-react'
 import {
@@ -119,7 +120,7 @@ const AllTransactionsTable = () => {
                   <tr key={transaction?.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Text size="sm" weight="medium">
-                        {transaction?.createdAt ? new Date(transaction.createdAt).toLocaleString() : '-'}
+                        {formatDateTime(transaction?.createdAt)}
                       </Text>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

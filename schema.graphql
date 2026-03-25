@@ -395,6 +395,7 @@ type LoanNode implements Node {
   totalAmount: Decimal
   totalPaid: Decimal
   pendingBalance: Decimal
+  installmentAmount: Decimal
   status: String
   isFullyPaid: Boolean
   isOverdue: Boolean

@@ -6,6 +6,7 @@ const LoanDetailQuery = graphql(`
       id
       amount
       installments
+      installmentAmount
       paymentFrequency
       isApproved
       isRejected

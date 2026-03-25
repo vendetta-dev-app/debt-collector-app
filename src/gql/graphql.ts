@@ -450,6 +450,7 @@ export type LoanNode = Node & {
   dueDate?: Maybe<Scalars["Date"]["output"]>;
   /** The ID of the object */
   id: Scalars["ID"]["output"];
+  installmentAmount?: Maybe<Scalars["Decimal"]["output"]>;
   /** Cantidad de cuotas (mínimo 1, máximo 90) */
   installments: Scalars["Int"]["output"];
   isApproved: Scalars["Boolean"]["output"];
@@ -1434,6 +1435,7 @@ export type LoanDetailQuery = {
     id: string;
     amount: any;
     installments: number;
+    installmentAmount?: any | null;
     paymentFrequency: LoansLoanPaymentFrequencyChoices;
     isApproved: boolean;
     isRejected: boolean;
@@ -2998,6 +3000,10 @@ export const LoanDetailDocument = {
                 {
                   kind: "Field",
                   name: { kind: "Name", value: "installments" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "installmentAmount" },
                 },
                 {
                   kind: "Field",

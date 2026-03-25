@@ -1,18 +1,17 @@
+import type { LoanNode } from '@types'
 import { useState } from 'react'
+import * as Yup from 'yup'
+import { Form, Formik } from 'formik'
 import { useMutation } from '@apollo/client'
 import NiceModal from '@ebay/nice-modal-react'
-import { HiOutlineX, HiOutlineCurrencyDollar, HiOutlineCalendar, HiOutlineCreditCard, HiOutlineDocumentText } from 'react-icons/hi'
-import { Form, Formik } from 'formik'
-import * as Yup from 'yup'
-import CreatePaymentMutation from '@/modules/loans/mutations/CreatePaymentMutation'
 import { Alert, Button } from 'flowbite-react'
+import { HiOutlineX, HiOutlineCurrencyDollar, HiOutlineCalendar, HiOutlineCreditCard, HiOutlineDocumentText } from 'react-icons/hi'
 import { Text } from '@/components'
 import CurrencyCell from '@/components/tables/CurrencyCell'
+import CreatePaymentMutation from '@/modules/loans/mutations/CreatePaymentMutation'
 
 interface CreatePaymentModalProps {
-  loanId: string
-  clientId?: string
-  pendingBalance?: number
+  loan: LoanNode
   onPaymentSuccess?: () => void
 }
 
@@ -44,7 +43,7 @@ const validationSchema = Yup.object({
   notes: Yup.string(),
 })
 
-const CreatePaymentModal = NiceModal.create(({ loanId, pendingBalance, onPaymentSuccess }: CreatePaymentModalProps) => {
+const CreatePaymentModal = NiceModal.create(({ loan, onPaymentSuccess }: CreatePaymentModalProps) => {
   const modal = NiceModal.useModal()
   const [error, setError] = useState<string | null>(null)
 
@@ -54,7 +53,7 @@ const CreatePaymentModal = NiceModal.create(({ loanId, pendingBalance, onPayment
         modal.resolve()
         modal.hide()
         if (onPaymentSuccess) {
-          onPaymentSuccess()
+          onPaymentSuccess?.()
         }
       }
     },
@@ -66,9 +65,10 @@ const CreatePaymentModal = NiceModal.create(({ loanId, pendingBalance, onPayment
   const handleClose = () => {
     modal.hide()
   }
+  console.log({ loan })
 
   const initialValues: FormValues = {
-    amount: '',
+    amount: loan.installmentAmount ? loan.installmentAmount : '',
     paymentDate: new Date().toISOString().split('T')[0],
     paymentMethod: 'CASH',
     notes: '',
@@ -81,7 +81,7 @@ const CreatePaymentModal = NiceModal.create(({ loanId, pendingBalance, onPayment
       await createPayment({
         variables: {
           input: {
-            loanId: loanId,
+            loanId: loan.id,
             amount: parseFloat(values.amount),
             paymentDate: values.paymentDate,
             paymentMethod: values.paymentMethod,
@@ -94,7 +94,7 @@ const CreatePaymentModal = NiceModal.create(({ loanId, pendingBalance, onPayment
     }
   }
 
-  const maxAmount = pendingBalance || 0
+  const maxAmount = loan.pendingBalance || 0
 
   return (
     <div
@@ -134,7 +134,7 @@ const CreatePaymentModal = NiceModal.create(({ loanId, pendingBalance, onPayment
               <div className="text-right">
                 <p className="text-xs text-primary-600 dark:text-primary-400 font-medium">Loan ID</p>
                 <p className="text-sm text-primary-800 dark:text-primary-200 font-mono">
-                  {loanId?.slice(0, 8)}...
+                  {loan?.id?.slice(0, 8)}...
                 </p>
               </div>
             </div>

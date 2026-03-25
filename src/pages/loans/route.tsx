@@ -1,3 +1,4 @@
+import type { LoanNode } from '@types'
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@apollo/client'
 import { Badge, Button, Spinner } from 'flowbite-react'
@@ -286,9 +287,7 @@ const LoanDetailPage = () => {
           <Button
             size="lg"
             onClick={() => NiceModal.show(CreatePaymentModal, {
-              loanId: loan?.id,
-              clientId: loan?.client?.id,
-              pendingBalance: loan?.pendingBalance,
+              loan: loan as LoanNode,
               onPaymentSuccess: handlePaymentSuccess
             })}
           >

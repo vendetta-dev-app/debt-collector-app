@@ -305,8 +305,8 @@ type CreateManagerPayload {
 input CreatePaymentInput {
   loanId: String!
   amount: Decimal!
-  paymentDate: String!
-  paymentMethod: String!
+  paymentDate: DateTime!
+  paymentMethod: PaymentMethodType!
   notes: String
   clientMutationId: String
 }
@@ -532,12 +532,19 @@ type PageInfo {
   endCursor: String
 }
 
+"""An enumeration."""
+enum PaymentMethodType {
+  CASH
+  TRANSFER
+  OTHER
+}
+
 type PaymentNode implements Node {
   """The ID of the object"""
   id: ID!
   loan: LoanNode!
   amount: Decimal!
-  paymentDate: Date!
+  paymentDate: DateTime!
   paymentMethod: LoansPaymentPaymentMethodChoices!
   notes: String!
   voidedAt: DateTime

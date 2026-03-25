@@ -399,8 +399,8 @@ export type CreatePaymentInput = {
   clientMutationId?: InputMaybe<Scalars["String"]["input"]>;
   loanId: Scalars["String"]["input"];
   notes?: InputMaybe<Scalars["String"]["input"]>;
-  paymentDate: Scalars["String"]["input"];
-  paymentMethod: Scalars["String"]["input"];
+  paymentDate: Scalars["DateTime"]["input"];
+  paymentMethod: PaymentMethodType;
 };
 
 export type CreatePaymentPayload = {
@@ -669,6 +669,13 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars["String"]["output"]>;
 };
 
+/** An enumeration. */
+export enum PaymentMethodType {
+  Cash = "CASH",
+  Other = "OTHER",
+  Transfer = "TRANSFER",
+}
+
 export type PaymentNode = Node & {
   __typename?: "PaymentNode";
   amount: Scalars["Decimal"]["output"];
@@ -678,7 +685,7 @@ export type PaymentNode = Node & {
   isVoided?: Maybe<Scalars["Boolean"]["output"]>;
   loan: LoanNode;
   notes: Scalars["String"]["output"];
-  paymentDate: Scalars["Date"]["output"];
+  paymentDate: Scalars["DateTime"]["output"];
   paymentMethod: LoansPaymentPaymentMethodChoices;
   transactions?: Maybe<Array<Maybe<TransactionNode>>>;
   updatedAt: Scalars["DateTime"]["output"];

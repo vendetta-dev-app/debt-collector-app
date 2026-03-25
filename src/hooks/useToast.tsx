@@ -15,8 +15,8 @@ const textColor: Record<ToastType, string> = {
 const useToast = () => (message: ValueOrFunction<Renderable, Toast>, type: ToastType = 'success', options?: ToastOptions) => toast.custom((t) => (
     <div
         className={clsx(
-            'relative flex items-start rounded-lg  backdrop-blur-sm p-4 pr-6',
-            'shadow-md',
+            'relative flex items-start rounded-lg p-4 pr-6',
+            'shadow-md bg-white dark:bg-gray-700',
             textColor[type],
         )}
     >

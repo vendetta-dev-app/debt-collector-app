@@ -8,7 +8,7 @@ function App() {
   return (
       <ApolloProvider client={client}>
         <RouterProvider router={router}/>
-        <Toaster position="bottom-center"/>
+        <Toaster position="top-center"/>
       </ApolloProvider>
   )
 }

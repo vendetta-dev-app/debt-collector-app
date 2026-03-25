@@ -177,7 +177,7 @@ const ClientsPage = () => {
         <TextInput
             icon={HiOutlineSearch}
             type="text"
-            placeholder="Buscar por nombre, alias, RUT..."
+            placeholder="Buscar por nombre, alias, DNI..."
             value={search}
             onChange={handleSearchChange}
         />

@@ -35,12 +35,12 @@ const validationSchema = Yup.object().shape({
       .min(3, 'El nombre debe tener al menos 3 caracteres')
       .required('El nombre es requerido'),
   identity_document: Yup.string()
-      .test('rut', 'RUT inválido. Formato: XX.XXX.XXX-X', (value) => {
+      .test('dni', 'DNI inválido. Formato: XX.XXX.XXX-X', (value) => {
         if (!value) return false
         const clean = value.replace(/\./g, '').replace(/-/g, '')
         return validateRUT(clean)
       })
-      .required('El RUT es requerido'),
+      .required('El DNI es requerido'),
   alias: Yup.string().optional(),
   phone_number_1: Yup.string()
       .test('chilean-phone', 'Teléfono inválido. Formato: 9 XXXX XXXX', (value) => {
@@ -128,10 +128,10 @@ const CreateClientForm: FC<CreateClientFormProps> = ({ onSuccess, onCancel }) =>
                     icon={HiOutlineUser}
                 />
 
-                {/* RUT */}
+                {/* DNI */}
                 <FormField
                     name="identity_document"
-                    label="RUT"
+                    label="DNI"
                     placeholder="12345678-9"
                     icon={HiOutlineIdentification}
                     onBlur={(e: React.FocusEvent<HTMLInputElement>) => {

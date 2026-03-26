@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@apollo/client'
 import {
+  HiOutlineCalendar,
   HiOutlineCollection,
   HiOutlineCurrencyDollar,
   HiOutlineExclamationCircle,
@@ -252,10 +253,17 @@ const RecentLoansSection = ({ loans }: { loans: any[] }) => {
 const QuickActions = () => {
   const actions = useMemo(() => [
     {
+      label: 'Visitas de hoy',
+      icon: HiOutlineCalendar,
+      href: '/today',
+      description: 'Clientes con cobros programados para hoy',
+      color: 'orange',
+    },
+    {
       label: 'Mis Clientes',
       icon: HiOutlineUserGroup,
       href: '/clients',
-      description: 'Gestionar clientes y crear nuevos',
+      description: 'Gestionar clientes y organizar ruta',
       color: 'blue',
     },
     {
@@ -364,14 +372,14 @@ const HomePage = () => {
             <>
               <RouteInfoCard route={route}/>
 
+              {/* Quick Actions - Only show when route is assigned */}
+              <QuickActions/>
+
               {/* Pending/Overdue Loans Section */}
               <PendingLoansSection loans={loans}/>
 
               {/* Recent Loans Section */}
               <RecentLoansSection loans={loans}/>
-
-              {/* Quick Actions - Only show when route is assigned */}
-              <QuickActions/>
             </>
         ) : (
             <NoRouteState/>

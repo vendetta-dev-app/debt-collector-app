@@ -10,6 +10,8 @@ import LoanDetailPage from '@/pages/loans/route'
 import ClientsPage from '@/pages/clients'
 import CreateClientPage from '@/pages/clients/new'
 import ClientDetailPage from '@/pages/clients/detail'
+import OrganizeRoutePage from '@/pages/clients/organize'
+import TodayPage from '@/pages/today'
 import ProtectedRoutes from '@/router/ProtectedRoutes'
 import AuthProvider from '@auth/contexts/AuthProvider'
 import MeProvider from '@auth/contexts/MeProvider'
@@ -34,6 +36,10 @@ const router = createBrowserRouter([
       {
         path: '',
         element: <HomePage/>,
+      },
+      {
+        path: 'today',
+        element: <TodayPage/>,
       },
       {
         path: 'transactions',
@@ -68,6 +74,10 @@ const router = createBrowserRouter([
           {
             path: '',
             element: <ClientsPage/>,
+          },
+          {
+            path: 'organize',
+            element: <OrganizeRoutePage/>,
           },
           {
             path: ':clientId',

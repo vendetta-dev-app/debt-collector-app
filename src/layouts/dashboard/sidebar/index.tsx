@@ -2,7 +2,7 @@ import type { ISidebarItem } from '@/layouts/dashboard/sidebar/SidebarLink'
 import SidebarLink from '@/layouts/dashboard/sidebar/SidebarLink'
 import NiceModal, { useModal } from '@ebay/nice-modal-react'
 import { Drawer, DrawerHeader, DrawerItems, Sidebar, SidebarItemGroup, SidebarItems } from 'flowbite-react'
-import { HiMenuAlt1, HiOutlineUserGroup } from 'react-icons/hi'
+import { HiMenuAlt1, HiOutlineCalendar, HiOutlineUserGroup } from 'react-icons/hi'
 import { TbCoins, TbHome, TbMoneybag } from 'react-icons/tb'
 
 const items: ISidebarItem[] = [
@@ -10,6 +10,11 @@ const items: ISidebarItem[] = [
     name: 'Inicio',
     icon: TbHome,
     href: '/',
+  },
+  {
+    name: 'Visitas de hoy',
+    icon: HiOutlineCalendar,
+    href: '/today',
   },
   {
     name: 'Mis Clientes',

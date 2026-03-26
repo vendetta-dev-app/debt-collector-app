@@ -120,6 +120,7 @@ type ClientNode implements Node {
   latitude: Decimal
   longitude: Decimal
   route: RouteNode
+  visitOrder: Int
   isActive: Boolean!
   loans(offset: Int, before: String, after: String, first: Int, last: Int): LoanNodeConnection!
 }
@@ -139,6 +140,11 @@ type ClientNodeEdge {
 
   """A cursor for use in pagination"""
   cursor: String!
+}
+
+input ClientOrderInput {
+  clientId: String!
+  order: Int!
 }
 
 type CollectorNode implements Node {
@@ -396,6 +402,11 @@ type LoanNode implements Node {
   totalPaid: Decimal
   pendingBalance: Decimal
   installmentAmount: Decimal
+  installmentsCompleted: Int
+  installmentsDue: Int
+  paymentStatus: String
+  shouldVisitToday: Boolean
+  nextVisitDate: Date
   status: String
   isFullyPaid: Boolean
   isOverdue: Boolean
@@ -493,6 +504,7 @@ type Mutation {
   updateCollector(input: UpdateCollectorInput!): UpdateCollectorPayload
   createClient(input: CreateClientInput!): CreateClientPayload
   updateClient(input: UpdateClientInput!): UpdateClientPayload
+  reorderRouteClients(input: ReorderRouteClientsInput!): ReorderRouteClientsPayload
 }
 
 """An object with an ID"""
@@ -634,6 +646,7 @@ type Query {
   managersByAdmin(offset: Int, before: String, after: String, first: Int, last: Int): ManagerNodeConnection
   clientsByAdmin(offset: Int, before: String, after: String, first: Int, last: Int): ClientNodeConnection
   clientsByCollector(offset: Int, before: String, after: String, first: Int, last: Int): ClientNodeConnection
+  todayVisits: [ClientNode]
   client(id: ID!): ClientNode
 }
 
@@ -671,6 +684,16 @@ type RegionNodeEdge {
 
   """A cursor for use in pagination"""
   cursor: String!
+}
+
+input ReorderRouteClientsInput {
+  clientOrders: [ClientOrderInput]!
+  clientMutationId: String
+}
+
+type ReorderRouteClientsPayload {
+  success: Boolean
+  clientMutationId: String
 }
 
 type RouteNode implements Node {

@@ -6,6 +6,7 @@ import { Badge, Button, Card, Spinner, TextInput } from 'flowbite-react'
 import {
   HiChevronRight,
   HiOutlineLockClosed,
+  HiOutlineMenuAlt2,
   HiOutlinePhone,
   HiOutlineSearch,
   HiOutlineUserGroup,
@@ -164,14 +165,25 @@ const ClientsPage = () => {
           <Text size="lg" weight="bold">
             Mis Clientes
           </Text>
-          <Button
-              size="sm"
-              className="gap-2"
-              onClick={() => navigate('/clients/new')}
-          >
-            <HiUserAdd className="w-4 h-4"/>
-            Nuevo
-          </Button>
+          <div className="flex gap-2">
+            <Button
+                size="sm"
+                color="light"
+                className="gap-2"
+                onClick={() => navigate('/clients/organize')}
+            >
+              <HiOutlineMenuAlt2 className="w-4 h-4"/>
+              Organizar
+            </Button>
+            <Button
+                size="sm"
+                className="gap-2"
+                onClick={() => navigate('/clients/new')}
+            >
+              <HiUserAdd className="w-4 h-4"/>
+              Nuevo
+            </Button>
+          </div>
         </div>
 
         <TextInput

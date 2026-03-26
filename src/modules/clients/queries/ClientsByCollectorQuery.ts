@@ -7,6 +7,7 @@ const ClientsByCollectorQuery = graphql(`
         node {
           id
           alias
+          visitOrder
           identityDocument
           addressLine1
           addressLine2

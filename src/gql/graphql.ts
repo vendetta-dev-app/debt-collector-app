@@ -195,6 +195,7 @@ export type ClientNode = Node & {
   neighborhood: Scalars["String"]["output"];
   route?: Maybe<RouteNode>;
   user: UserNode;
+  visitOrder?: Maybe<Scalars["Int"]["output"]>;
 };
 
 export type ClientNodeLoansArgs = {
@@ -220,6 +221,11 @@ export type ClientNodeEdge = {
   cursor: Scalars["String"]["output"];
   /** The item at the end of the edge */
   node?: Maybe<ClientNode>;
+};
+
+export type ClientOrderInput = {
+  clientId: Scalars["String"]["input"];
+  order: Scalars["Int"]["input"];
 };
 
 export type CollectorNode = Node & {
@@ -453,16 +459,21 @@ export type LoanNode = Node & {
   installmentAmount?: Maybe<Scalars["Decimal"]["output"]>;
   /** Cantidad de cuotas (mínimo 1, máximo 90) */
   installments: Scalars["Int"]["output"];
+  installmentsCompleted?: Maybe<Scalars["Int"]["output"]>;
+  installmentsDue?: Maybe<Scalars["Int"]["output"]>;
   isApproved: Scalars["Boolean"]["output"];
   isFullyPaid?: Maybe<Scalars["Boolean"]["output"]>;
   isOverdue?: Maybe<Scalars["Boolean"]["output"]>;
   isRejected: Scalars["Boolean"]["output"];
+  nextVisitDate?: Maybe<Scalars["Date"]["output"]>;
   /** Frecuencia de pagos: Diaria, Semanal o Mensual */
   paymentFrequency: LoansLoanPaymentFrequencyChoices;
+  paymentStatus?: Maybe<Scalars["String"]["output"]>;
   payments?: Maybe<Array<Maybe<PaymentNode>>>;
   pendingBalance?: Maybe<Scalars["Decimal"]["output"]>;
   rejectionReason: Scalars["String"]["output"];
   route: RouteNode;
+  shouldVisitToday?: Maybe<Scalars["Boolean"]["output"]>;
   status?: Maybe<Scalars["String"]["output"]>;
   totalAmount?: Maybe<Scalars["Decimal"]["output"]>;
   totalPaid?: Maybe<Scalars["Decimal"]["output"]>;
@@ -559,6 +570,7 @@ export type Mutation = {
   createRoute?: Maybe<CreateRoutePayload>;
   editRoute?: Maybe<EditRoutePayload>;
   refreshToken?: Maybe<Refresh>;
+  reorderRouteClients?: Maybe<ReorderRouteClientsPayload>;
   tokenAuth?: Maybe<ObtainJsonWebTokenPayload>;
   updateClient?: Maybe<UpdateClientPayload>;
   updateCollector?: Maybe<UpdateCollectorPayload>;
@@ -609,6 +621,10 @@ export type MutationEditRouteArgs = {
 
 export type MutationRefreshTokenArgs = {
   token?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type MutationReorderRouteClientsArgs = {
+  input: ReorderRouteClientsInput;
 };
 
 export type MutationTokenAuthArgs = {
@@ -733,6 +749,7 @@ export type Query = {
   regions?: Maybe<RegionNodeConnection>;
   route?: Maybe<RouteNode>;
   routesByAdmin?: Maybe<RouteNodeConnection>;
+  todayVisits?: Maybe<Array<Maybe<ClientNode>>>;
   transactions?: Maybe<TransactionNodeConnection>;
   transactionsByCollector?: Maybe<Array<Maybe<CollectorTransactionType>>>;
 };
@@ -920,6 +937,17 @@ export type RegionNodeEdge = {
   cursor: Scalars["String"]["output"];
   /** The item at the end of the edge */
   node?: Maybe<RegionNode>;
+};
+
+export type ReorderRouteClientsInput = {
+  clientMutationId?: InputMaybe<Scalars["String"]["input"]>;
+  clientOrders: Array<InputMaybe<ClientOrderInput>>;
+};
+
+export type ReorderRouteClientsPayload = {
+  __typename?: "ReorderRouteClientsPayload";
+  clientMutationId?: Maybe<Scalars["String"]["output"]>;
+  success?: Maybe<Scalars["Boolean"]["output"]>;
 };
 
 export type RouteNode = Node & {
@@ -1279,6 +1307,18 @@ export type CreateClientMutation = {
   } | null;
 };
 
+export type ReorderRouteClientsMutationVariables = Exact<{
+  input: ReorderRouteClientsInput;
+}>;
+
+export type ReorderRouteClientsMutation = {
+  __typename?: "Mutation";
+  reorderRouteClients?: {
+    __typename?: "ReorderRouteClientsPayload";
+    success?: boolean | null;
+  } | null;
+};
+
 export type UpdateClientMutationVariables = Exact<{
   input: UpdateClientInput;
 }>;
@@ -1344,6 +1384,7 @@ export type ClientsByCollectorQuery = {
         __typename?: "ClientNode";
         id: string;
         alias?: string | null;
+        visitOrder?: number | null;
         identityDocument: string;
         addressLine1: string;
         addressLine2?: string | null;
@@ -1368,6 +1409,45 @@ export type ClientsByCollectorQuery = {
       endCursor?: string | null;
     };
   } | null;
+};
+
+export type TodayVisitsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type TodayVisitsQuery = {
+  __typename?: "Query";
+  todayVisits?: Array<{
+    __typename?: "ClientNode";
+    id: string;
+    alias?: string | null;
+    visitOrder?: number | null;
+    neighborhood: string;
+    addressLine1: string;
+    user: {
+      __typename?: "UserNode";
+      id: string;
+      fullName: string;
+      phoneNumber1: string;
+    };
+    loans: {
+      __typename?: "LoanNodeConnection";
+      edges: Array<{
+        __typename?: "LoanNodeEdge";
+        node?: {
+          __typename?: "LoanNode";
+          id: string;
+          shouldVisitToday?: boolean | null;
+          isFullyPaid?: boolean | null;
+          paymentStatus?: string | null;
+          installmentAmount?: any | null;
+          installmentsCompleted?: number | null;
+          installmentsDue?: number | null;
+          pendingBalance?: any | null;
+          paymentFrequency: LoansLoanPaymentFrequencyChoices;
+          nextVisitDate?: any | null;
+        } | null;
+      } | null>;
+    };
+  } | null> | null;
 };
 
 export type CreateLoanMutationVariables = Exact<{
@@ -2333,6 +2413,60 @@ export const CreateClientDocument = {
   CreateClientMutation,
   CreateClientMutationVariables
 >;
+export const ReorderRouteClientsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "ReorderRouteClients" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "ReorderRouteClientsInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "reorderRouteClients" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ReorderRouteClientsMutation,
+  ReorderRouteClientsMutationVariables
+>;
 export const UpdateClientDocument = {
   kind: "Document",
   definitions: [
@@ -2590,6 +2724,10 @@ export const ClientsByCollectorDocument = {
                             },
                             {
                               kind: "Field",
+                              name: { kind: "Name", value: "visitOrder" },
+                            },
+                            {
+                              kind: "Field",
                               name: { kind: "Name", value: "identityDocument" },
                             },
                             {
@@ -2702,6 +2840,153 @@ export const ClientsByCollectorDocument = {
   ClientsByCollectorQuery,
   ClientsByCollectorQueryVariables
 >;
+export const TodayVisitsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "TodayVisits" },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "todayVisits" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "alias" } },
+                { kind: "Field", name: { kind: "Name", value: "visitOrder" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "neighborhood" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "addressLine1" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "user" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      { kind: "Field", name: { kind: "Name", value: "id" } },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "fullName" },
+                      },
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "phoneNumber1" },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "loans" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "Field",
+                        name: { kind: "Name", value: "edges" },
+                        selectionSet: {
+                          kind: "SelectionSet",
+                          selections: [
+                            {
+                              kind: "Field",
+                              name: { kind: "Name", value: "node" },
+                              selectionSet: {
+                                kind: "SelectionSet",
+                                selections: [
+                                  {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: {
+                                      kind: "Name",
+                                      value: "shouldVisitToday",
+                                    },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: {
+                                      kind: "Name",
+                                      value: "isFullyPaid",
+                                    },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: {
+                                      kind: "Name",
+                                      value: "paymentStatus",
+                                    },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: {
+                                      kind: "Name",
+                                      value: "installmentAmount",
+                                    },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: {
+                                      kind: "Name",
+                                      value: "installmentsCompleted",
+                                    },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: {
+                                      kind: "Name",
+                                      value: "installmentsDue",
+                                    },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: {
+                                      kind: "Name",
+                                      value: "pendingBalance",
+                                    },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: {
+                                      kind: "Name",
+                                      value: "paymentFrequency",
+                                    },
+                                  },
+                                  {
+                                    kind: "Field",
+                                    name: {
+                                      kind: "Name",
+                                      value: "nextVisitDate",
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<TodayVisitsQuery, TodayVisitsQueryVariables>;
 export const CreateLoanDocument = {
   kind: "Document",
   definitions: [

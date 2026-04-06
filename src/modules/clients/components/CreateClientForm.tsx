@@ -10,7 +10,7 @@ import { useToast } from '@hooks'
 import { FormGrid } from '@/components'
 import FormField from '@/components/forms/FormField'
 import CreateClientMutation from '@clients/mutations/CreateClientMutation'
-import { formatChileanPhone, formatRUT, validateChileanPhone, validateRUT, cleanChileanPhone, cleanRUT } from '@snippets/forms/clientValidations'
+import { formatChileanPhone, formatRUT, cleanChileanPhone, cleanRUT } from '@snippets/forms/clientValidations'
 
 interface Values {
   full_name: string
@@ -35,25 +35,13 @@ const validationSchema = Yup.object().shape({
       .min(3, 'El nombre debe tener al menos 3 caracteres')
       .required('El nombre es requerido'),
   identity_document: Yup.string()
-      .test('dni', 'DNI inválido. Formato: XX.XXX.XXX-X', (value) => {
-        if (!value) return false
-        const clean = value.replace(/\./g, '').replace(/-/g, '')
-        return validateRUT(clean)
-      })
-      .required('El DNI es requerido'),
+      .min(7, 'El RUT debe tener al menos 7 caracteres')
+      .required('El RUT es requerido'),
   alias: Yup.string().optional(),
   phone_number_1: Yup.string()
-      .test('chilean-phone', 'Teléfono inválido. Formato: 9 XXXX XXXX', (value) => {
-        if (!value) return false
-        return validateChileanPhone(value)
-      })
+      .min(9, 'El teléfono debe tener al menos 9 dígitos')
       .required('El teléfono principal es requerido'),
-  phone_number_2: Yup.string()
-      .test('chilean-phone', 'Teléfono inválido', (value) => {
-        if (!value) return true
-        return validateChileanPhone(value)
-      })
-      .optional(),
+  phone_number_2: Yup.string().optional(),
   address_line_1: Yup.string()
       .min(5, 'La dirección debe tener al menos 5 caracteres')
       .required('La dirección es requerida'),
@@ -142,7 +130,7 @@ const CreateClientForm: FC<CreateClientFormProps> = ({ onSuccess, onCancel }) =>
                     }}
                 />
                 <p className="col-span-full text-xs text-gray-500 dark:text-gray-400 -mt-3 mb-2">
-                  Formato: XX.XXX.XXX-X (se formatea automáticamente al salir del campo)
+                  Ingrese el RUT sin puntos ni guion, o con ellos. Ejemplo: 12345678-9
                 </p>
 
                 {/* Alias (opcional) */}
